@@ -70,6 +70,7 @@ class Teact
         when 'function', 'number', 'boolean'
           contents = arg
         when 'object'
+          arg = arg.default if arg.default && arg.__esModule
           if arg.constructor == Object and not React.isValidElement arg
             attrs = Object.keys(arg).reduce(
               (clone, key) -> clone[key] = arg[key]; clone
@@ -150,7 +151,7 @@ class Teact
     bound = {}
 
     boundMethodNames = [].concat(
-      'ie normalizeArgs script crel pureComponent text use'.split(' ')
+      'bless ie normalizeArgs script crel pureComponent text use'.split(' ')
       merge_elements 'regular', 'obsolete', 'void', 'obsolete_void'
     )
     for method in boundMethodNames
@@ -159,6 +160,11 @@ class Teact
 
     bound.crel.text = bound.text
     return bound
+
+  bless: (reactComponent)->
+    reactComponent = reactComponent.default if reactComponent.__esModule && reactComponent.default
+    name = reactComponent.name
+    @[name] = (args...) => @crel reactComponent, args...
 
 for tagName in merge_elements 'regular', 'obsolete'
   do (tagName) ->
