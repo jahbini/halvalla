@@ -1,4 +1,6 @@
-React = require 'react'
+#React = require 'react'
+React = require 'M'
+React.createElement = React
 
 elements =
   # Valid HTML 5 elements requiring a closing crel.
@@ -160,11 +162,15 @@ class Teact
 
     bound.crel.text = bound.text
     return bound
+  createElement: (args...)->crel args...
 
   bless: (reactComponent)->
     reactComponent = reactComponent.default if reactComponent.__esModule && reactComponent.default
     name = reactComponent.name
     @[name] = (args...) => @crel reactComponent, args...
+
+  render: (domElement,rest)->
+    M.mount domElement, rest
 
 for tagName in merge_elements 'regular', 'obsolete'
   do (tagName) ->
@@ -175,5 +181,8 @@ for tagName in merge_elements 'void', 'obsolete_void'
     Teact::[tagName] = (args...) -> @selfClosingTag tagName, args...
 
 if module?.exports
-  module.exports = new Teact().tags()
+  t = new Teact
+  module.exports = t.tags()
+  module.exports.teact = t
+  module.exports.Component =
   module.exports.Teact = Teact
