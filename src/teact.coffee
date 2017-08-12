@@ -1,5 +1,7 @@
 React = require 'react'
+Rebass = require 'rebass'
 
+blessedTags = {}
 elements =
   # Valid HTML 5 elements requiring a closing crel.
   # Note: the `var` element is out for obvious reasons, please use `crel 'var'`.
@@ -159,13 +161,19 @@ class Teact
         bound[method] = (args...) => @[method].apply @, args
 
     bound.crel.text = bound.text
+    for method of blessedTags
+      do (method) =>
+        bound[method] = (args...) => @[method].apply @, args
+      
     return bound
 
-  bless: (reactComponent)->
+  bless: (reactComponent,itsName=null)->
     reactComponent = reactComponent.default if reactComponent.__esModule && reactComponent.default
-    name = reactComponent.name
-    @[name] = (args...) => @crel reactComponent, args...
+    name = itsName || reactComponent.name
+    blessedTags[name]=name
+    Teact::[name] = (args...) => @crel reactComponent, args...
 
+  
 for tagName in merge_elements 'regular', 'obsolete'
   do (tagName) ->
     Teact::[tagName] = (args...) -> @crel tagName, args...
@@ -174,6 +182,12 @@ for tagName in merge_elements 'void', 'obsolete_void'
   do (tagName) ->
     Teact::[tagName] = (args...) -> @selfClosingTag tagName, args...
 
+for own key, funct of Rebass
+  do (key,funct)->
+    blessedTags[key]=key
+    Teact::[key] = (args...) -> @crel funct, args... unless !funct || funct == true
+
+singleton = new Teact()
 if module?.exports
-  module.exports = new Teact().tags()
+  module.exports = singleton.tags()
   module.exports.Teact = Teact
