@@ -2,47 +2,47 @@
   "_args": [
     [
       {
-        "raw": "teact@git+https://github.com/jahbini/teact.git#esBless",
+        "raw": "teact@git+https://github.com/jahbini/teact.git#jah",
         "scope": null,
         "escapedName": "teact",
         "name": "teact",
-        "rawSpec": "git+https://github.com/jahbini/teact.git#esBless",
-        "spec": "git+https://github.com/jahbini/teact.git#esBless",
+        "rawSpec": "git+https://github.com/jahbini/teact.git#jah",
+        "spec": "git+https://github.com/jahbini/teact.git#jah",
         "type": "hosted",
         "hosted": {
           "type": "github",
-          "ssh": "git@github.com:jahbini/teact.git#esBless",
-          "sshUrl": "git+ssh://git@github.com/jahbini/teact.git#esBless",
-          "httpsUrl": "git+https://github.com/jahbini/teact.git#esBless",
-          "gitUrl": "git://github.com/jahbini/teact.git#esBless",
-          "shortcut": "github:jahbini/teact#esBless",
-          "directUrl": "https://raw.githubusercontent.com/jahbini/teact/esBless/package.json"
+          "ssh": "git@github.com:jahbini/teact.git#jah",
+          "sshUrl": "git+ssh://git@github.com/jahbini/teact.git#jah",
+          "httpsUrl": "git+https://github.com/jahbini/teact.git#jah",
+          "gitUrl": "git://github.com/jahbini/teact.git#jah",
+          "shortcut": "github:jahbini/teact#jah",
+          "directUrl": "https://raw.githubusercontent.com/jahbini/teact/jah/package.json"
         }
       },
       "/site-master/site-loader"
     ]
   ],
-  "_from": "git+https://github.com/jahbini/teact.git#esBless",
+  "_from": "git+https://github.com/jahbini/teact.git#jah",
   "_id": "teact@1.3.0",
   "_inCache": true,
   "_location": "/teact",
   "_phantomChildren": {},
   "_requested": {
-    "raw": "teact@git+https://github.com/jahbini/teact.git#esBless",
+    "raw": "teact@git+https://github.com/jahbini/teact.git#jah",
     "scope": null,
     "escapedName": "teact",
     "name": "teact",
-    "rawSpec": "git+https://github.com/jahbini/teact.git#esBless",
-    "spec": "git+https://github.com/jahbini/teact.git#esBless",
+    "rawSpec": "git+https://github.com/jahbini/teact.git#jah",
+    "spec": "git+https://github.com/jahbini/teact.git#jah",
     "type": "hosted",
     "hosted": {
       "type": "github",
-      "ssh": "git@github.com:jahbini/teact.git#esBless",
-      "sshUrl": "git+ssh://git@github.com/jahbini/teact.git#esBless",
-      "httpsUrl": "git+https://github.com/jahbini/teact.git#esBless",
-      "gitUrl": "git://github.com/jahbini/teact.git#esBless",
-      "shortcut": "github:jahbini/teact#esBless",
-      "directUrl": "https://raw.githubusercontent.com/jahbini/teact/esBless/package.json"
+      "ssh": "git@github.com:jahbini/teact.git#jah",
+      "sshUrl": "git+ssh://git@github.com/jahbini/teact.git#jah",
+      "httpsUrl": "git+https://github.com/jahbini/teact.git#jah",
+      "gitUrl": "git://github.com/jahbini/teact.git#jah",
+      "shortcut": "github:jahbini/teact#jah",
+      "directUrl": "https://raw.githubusercontent.com/jahbini/teact/jah/package.json"
     }
   },
   "_requiredBy": [
@@ -51,10 +51,10 @@
   "_resolved": "git+https://github.com/jahbini/teact.git#e866d475eac0d4f2ec09f574d010480e2cb03a05",
   "_shasum": "e94a56e722aa0cf53be8a4f64edc3962a851cc27",
   "_shrinkwrap": null,
-  "_spec": "teact@git+https://github.com/jahbini/teact.git#esBless",
+  "_spec": "teact@git+https://github.com/jahbini/teact.git#jah",
   "_where": "/site-master/site-loader",
   "bugs": {
-    "url": "https://github.com/hurrymaplelad/teact/issues"
+    "url": "https://github.com/jahbini/teact/issues"
   },
   "dependencies": {
     "rebass": "^1.0.3"
@@ -65,11 +65,11 @@
     "coffee-script": ">=1.8.0",
     "expect.js": "^0.3.1",
     "mocha": "^2.3.3",
-    "react": "^15.4.1",
+    "react": "^15.6.1",
     "react-dom": "^15.4.1"
   },
   "gitHead": "e866d475eac0d4f2ec09f574d010480e2cb03a05",
-  "homepage": "http://github.com/hurrymaplelad/teact",
+  "homepage": "http://github.com/jahbini/teact",
   "keywords": [
     "react",
     "cjsx",
