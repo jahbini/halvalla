@@ -57,11 +57,12 @@
     "url": "https://github.com/hurrymaplelad/teact/issues"
   },
   "dependencies": {
-    "coffeescript": "^2.0.0-beta4"
+    "rebass": "^1.0.4"
   },
   "description": "Generate React elements with CoffeeScript functions",
   "devDependencies": {
     "benchmark": "^1.0.0",
+    "coffee-script": ">=1.8.0",
     "expect.js": "^0.3.1",
     "mocha": "^2.3.3",
     "react": "^15.4.1",
@@ -105,5 +106,5 @@
     "pretest": "npm run compile",
     "test": "mocha"
   },
-  "version": "2.0.0"
+  "version": "1.3.0"
 }
