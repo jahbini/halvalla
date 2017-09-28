@@ -1,9 +1,20 @@
-React = require 'react'
 Rebass = require 'rebass'
-
+unless Master=Pylon?.get "Master" 
+  React = require 'react'
+  Master =
+    name: 'React'
+    isValidElement: React.isValidElement
+    Component: React.Component
+    createElement: React.createElement  
+  Mithril = require 'mithril'
+Master = 
+  name: 'Mithril'
+  isValidElement: (c)->c.view?
+  createElement: Mithril
+  
 blessedTags = {}
 elements =
-  # Valid HTML 5 elements requiring a closing crel.
+  # Valid HTML 5 elements requiring a closing crel
   # Note: the `var` element is out for obvious reasons, please use `crel 'var'`.
   regular: 'a abbr address article aside audio b bdi bdo blockquote body button
  canvas caption cite code colgroup datalist dd del details dfn div dl dt em
@@ -73,7 +84,7 @@ class Teact
           contents = arg
         when 'object'
           arg = arg.default if arg.default && arg.__esModule
-          if arg.constructor == Object and not React.isValidElement arg
+          if arg.constructor == Object and not Master.isValidElement arg
             attrs = Object.keys(arg).reduce(
               (clone, key) -> clone[key] = arg[key]; clone
               {}
@@ -104,7 +115,6 @@ class Teact
     unless tagName?
       throw new Error "Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: #{tagName}"
     {attrs, contents} = @normalizeArgs args
-
     switch typeof contents
       when 'function'
         previous = @resetStack []
@@ -112,11 +122,10 @@ class Teact
         children = @resetStack previous
       else
         children = contents
-
     if children?.splice
-      el = React.createElement tagName, attrs, children...
+      el = Master.createElement tagName, attrs, children...
     else
-      el = React.createElement tagName, attrs, children
+      el = Master.createElement tagName, attrs, children
 
     @stack?.push el
     return el
@@ -166,12 +175,17 @@ class Teact
         bound[method] = (args...) => @[method].apply @, args
       
     return bound
-
-  bless: (reactComponent,itsName=null)->
-    reactComponent = reactComponent.default if reactComponent.__esModule && reactComponent.default
-    name = itsName || reactComponent.name
+  
+  #if we are using React as the master, it supplies a class, otherwise an empty class with an empty view 
+  dummyComponent = class Component
+     view: -> 
+  Component: ()-> return if Master.Component then Master.Component else dummyComponent
+       
+  bless: (Component,itsName=null)->
+    Component = Component.default if Component.__esModule && Component.default
+    name = itsName || Component.name
     blessedTags[name]=name
-    Teact::[name] = (args...) => @crel reactComponent, args...
+    Teact::[name] = (args...) => @crel Component, args...
 
   
 for tagName in merge_elements 'regular', 'obsolete'
