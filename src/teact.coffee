@@ -1,4 +1,6 @@
-Rebass = require 'rebass'
+# Remove react dependency
+# Rebass, too, boo hoo
+###
 unless Master=Pylon?.get "Master" 
   React = require 'react'
   Master =
@@ -6,7 +8,8 @@ unless Master=Pylon?.get "Master"
     isValidElement: React.isValidElement
     Component: React.Component
     createElement: React.createElement  
-  Mithril = require 'mithril'
+###
+Mithril = require 'mithril'
 Master = 
   name: 'Mithril'
   isValidElement: (c)->c.view?
@@ -196,10 +199,12 @@ for tagName in merge_elements 'void', 'obsolete_void'
   do (tagName) ->
     Teact::[tagName] = (args...) -> @selfClosingTag tagName, args...
 
+###
 for own key, funct of Rebass
   do (key,funct)->
     blessedTags[key]=key
     Teact::[key] = (args...) -> @crel funct, args... unless !funct || funct == true
+###
 
 singleton = new Teact()
 if module?.exports
