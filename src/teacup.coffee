@@ -116,53 +116,6 @@ class Teacup
     else
       @text contents
 
-  isSelector: (string) ->
-    string.length > 1 and string.charAt(0) in ['#', '.']
-
-  parseSelector: (selector) ->
-    id = null
-    classes = []
-    for token in selector.split '.'
-      token = token.trim()
-      if id
-        classes.push token
-      else
-        [klass, id] = token.split '#'
-        classes.push token unless klass is ''
-    return {id, classes}
-
-  normalizeArgs: (args) ->
-    attrs = {}
-    selector = null
-    contents = null
-
-    for arg, index in args when arg?
-      switch typeof arg
-        when 'string'
-          if index is 0 and @isSelector(arg)
-            selector = arg
-            parsedSelector = @parseSelector(arg)
-          else
-            contents = arg
-        when 'function', 'number', 'boolean'
-          contents = arg
-        when 'object'
-          if arg.constructor == Object
-            attrs = arg
-          else
-            contents = arg
-        else
-          contents = arg
-
-    if parsedSelector?
-      {id, classes} = parsedSelector
-      attrs.id = id if id?
-      if classes?.length
-        if attrs.class
-          classes.push attrs.class
-        attrs.class = classes.join(' ')
-
-    return {attrs, contents, selector}
 
   tag: (tagName, args...) ->
     {attrs, contents} = @normalizeArgs args
@@ -186,7 +139,7 @@ class Teacup
   selfClosingTag: (tag, args...) ->
     {attrs, contents} = @normalizeArgs args
     if contents
-      throw new Error "Teacup: <#{tag}/> must not have content.  Attempted to nest #{contents}"
+      throw new Error "Chalice: <#{tag}/> must not have content.  Attempted to nest #{contents}"
     @raw "<#{tag}#{@renderAttrs attrs} />"
 
   coffeescript: (fn) ->
@@ -211,7 +164,7 @@ class Teacup
 
   text: (s) ->
     unless @htmlOut?
-      throw new Error("Teacup: can't call a tag function outside a rendering context")
+      throw new Error("Chalice: can't call a tag function outside a rendering context")
     @htmlOut += s? and @escape(s.toString()) or ''
     null
 
@@ -235,27 +188,6 @@ class Teacup
   quote: (value) ->
     "\"#{value}\""
 
-  #
-  # Plugins
-  #
-  use: (plugin) ->
-    plugin @
-
-  #
-  # Binding
-  #
-  tags: ->
-    bound = {}
-
-    boundMethodNames = [].concat(
-      'cede coffeescript comment component doctype escape ie normalizeArgs raw render renderable script tag text use'.split(' ')
-      merge_elements 'regular', 'obsolete', 'raw', 'void', 'obsolete_void'
-    )
-    for method in boundMethodNames
-      do (method) =>
-        bound[method] = (args...) => @[method].apply @, args
-
-    return bound
 
   component: (func) ->
     (args...) =>
@@ -268,26 +200,25 @@ class Teacup
 # Define tag functions on the prototype for pretty stack traces
 for tagName in merge_elements 'regular', 'obsolete'
   do (tagName) ->
-    Teacup::[tagName] = (args...) -> @tag tagName, args...
+    Chalice::[tagName] = (args...) -> @tag tagName, args...
 
 for tagName in merge_elements 'raw'
   do (tagName) ->
-    Teacup::[tagName] = (args...) -> @rawTag tagName, args...
+    Chalice::[tagName] = (args...) -> @rawTag tagName, args...
 
 for tagName in merge_elements 'script'
   do (tagName) ->
-    Teacup::[tagName] = (args...) -> @scriptTag tagName, args...
+    Chalice::[tagName] = (args...) -> @scriptTag tagName, args...
 
 for tagName in merge_elements 'void', 'obsolete_void'
   do (tagName) ->
-    Teacup::[tagName] = (args...) -> @selfClosingTag tagName, args...
+    Chalice::[tagName] = (args...) -> @selfClosingTag tagName, args...
 
 if module?.exports
-  module.exports = new Teacup().tags()
-  module.exports.Teacup = Teacup
+  module.exports = new Chalice().tags()
+  module.exports.Chalice = Chalice
 else if typeof define is 'function' and define.amd
-  define('teacup', [], -> new Teacup().tags())
+  define('teacup', [], -> new Chalice().tags())
 else
-  window.teacup = new Teacup().tags()
-  window.teacup.Teacup = Teacup
-
+  window.teacup = new Chalice().tags()
+  window.teacup.Chalice = Chalice
