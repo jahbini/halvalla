@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{raw, cede, div, p, strong, a} = require '../src/teact'
+{raw, cede, div, p, strong, a} = require '../src/chalice'
 {render} = require './helpers'
 
 describe 'render', ->

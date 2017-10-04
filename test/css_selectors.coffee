@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{div, img} = require '../src/teact'
+{div, img} = require '../src/chalice'
 {render} = require './helpers'
 
 describe 'CSS Selectors', ->

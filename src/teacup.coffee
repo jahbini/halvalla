@@ -1,50 +1,6 @@
-doctypes =
-  'default': '<!DOCTYPE html>'
-  '5': '<!DOCTYPE html>'
-  'xml': '<?xml version="1.0" encoding="utf-8" ?>'
-  'transitional': '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'
-  'strict': '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'
-  'frameset': '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">'
-  '1.1': '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">'
-  'basic': '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">'
-  'mobile': '<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.2//EN" "http://www.openmobilealliance.org/tech/DTD/xhtml-mobile12.dtd">'
-  'ce': '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "ce-html-1.0-transitional.dtd">'
 
-elements =
-  # Valid HTML 5 elements requiring a closing tag.
-  # Note: the `var` element is out for obvious reasons, please use `tag 'var'`.
-  regular: 'a abbr address article aside audio b bdi bdo blockquote body button
- canvas caption cite code colgroup datalist dd del details dfn div dl dt em
- fieldset figcaption figure footer form h1 h2 h3 h4 h5 h6 head header hgroup
- html i iframe ins kbd label legend li map mark menu meter nav noscript object
- ol optgroup option output p pre progress q rp rt ruby s samp section
- select small span strong sub summary sup table tbody td textarea tfoot
- th thead time title tr u ul video'
-
-  raw: 'style'
-
-  script: 'script'
-
-  # Valid self-closing HTML 5 elements.
-  void: 'area base br col command embed hr img input keygen link meta param
- source track wbr'
-
-  obsolete: 'applet acronym bgsound dir frameset noframes isindex listing
- nextid noembed plaintext rb strike xmp big blink center font marquee multicol
- nobr spacer tt'
-
-  obsolete_void: 'basefont frame'
-
-# Create a unique list of element names merging the desired groups.
-merge_elements = (args...) ->
-  result = []
-  for a in args
-    for element in elements[a].split ' '
-      result.push element unless element in result
-  result
-
-
-class Teacup
+{doctypes,elements,mergeElements} = require '../src/html-tags'
+module.exports = Teacup = class Teacup
   constructor: ->
     @htmlOut = null
 
@@ -53,10 +9,26 @@ class Teacup
     @htmlOut = html
     return previous
 
-  render: (template, args...) ->
+  march: (component)->
+    return '' unless component
+    switch typeof component
+      when 'string' then @text component
+      when 'array' then @march c for c in component
+      when 'object'
+        tagName = component.tagName
+        @text @[tagName] component
+        return
+      else
+        debugger
+        @text "bad component?"
+        @text component.toString()
+        return
+
+
+  render: (component) ->
     previous = @resetBuffer('')
     try
-      template(args...)
+      @march component
     finally
       result = @resetBuffer previous
     return result
@@ -117,30 +89,30 @@ class Teacup
       @text contents
 
 
-  tag: (tagName, args...) ->
-    {attrs, contents} = @normalizeArgs args
-    @raw "<#{tagName}#{@renderAttrs attrs}>"
-    @renderContents contents
+  tag: (cell) ->
+    {tagName, props, children} = cell
+    @raw "<#{tagName}#{@renderAttrs props}>"
+    @march children
     @raw "</#{tagName}>"
 
-  rawTag: (tagName, args...) ->
-    {attrs, contents} = @normalizeArgs args
-    @raw "<#{tagName}#{@renderAttrs attrs}>"
-    @raw contents
+  rawTag: (cell) ->
+    {tagName, props, children} = cell
+    @raw "<#{tagName}#{@renderAttrs props}>"
+    @raw children
     @raw "</#{tagName}>"
 
-  scriptTag: (tagName, args...) ->
-    {attrs, contents} = @normalizeArgs args
-    @raw "<#{tagName}#{@renderAttrs attrs}>"
-    @renderContents contents
+  scriptTag: (cell) ->
+    {tagName, props, children} = cell
+    @raw "<#{tagName}#{@renderAttrs props}>"
+    @renderContents children
     @raw "</#{tagName}>"
 
 
-  selfClosingTag: (tag, args...) ->
-    {attrs, contents} = @normalizeArgs args
-    if contents
-      throw new Error "Chalice: <#{tag}/> must not have content.  Attempted to nest #{contents}"
-    @raw "<#{tag}#{@renderAttrs attrs} />"
+  selfClosingTag: (cell) ->
+    {tagName, props, children} = cell
+    if children
+      throw new Error "Chalice: <#{tagName}/> must not have content.  Attempted to nest #{children}"
+    @raw "<#{tagName}#{@renderAttrs props}/>"
 
   coffeescript: (fn) ->
     @raw """<script type="text/javascript">(function() {
@@ -196,29 +168,19 @@ class Teacup
         args.unshift contents
         @renderContents.apply @, args
       func.apply @, [selector, attrs, renderContents]
-
 # Define tag functions on the prototype for pretty stack traces
-for tagName in merge_elements 'regular', 'obsolete'
+for tagName in mergeElements 'regular', 'obsolete'
   do (tagName) ->
-    Chalice::[tagName] = (args...) -> @tag tagName, args...
+    Teacup::[tagName] = (args...) -> @tag args...
 
-for tagName in merge_elements 'raw'
+for tagName in mergeElements 'raw'
   do (tagName) ->
-    Chalice::[tagName] = (args...) -> @rawTag tagName, args...
+    Teacup::[tagName] = (args...) -> @rawTag args...
 
-for tagName in merge_elements 'script'
+for tagName in mergeElements 'script'
   do (tagName) ->
-    Chalice::[tagName] = (args...) -> @scriptTag tagName, args...
+    Teacup::[tagName] = (args...) -> @scriptTag args...
 
-for tagName in merge_elements 'void', 'obsolete_void'
+for tagName in mergeElements 'void', 'obsolete_void'
   do (tagName) ->
-    Chalice::[tagName] = (args...) -> @selfClosingTag tagName, args...
-
-if module?.exports
-  module.exports = new Chalice().tags()
-  module.exports.Chalice = Chalice
-else if typeof define is 'function' and define.amd
-  define('teacup', [], -> new Chalice().tags())
-else
-  window.teacup = new Chalice().tags()
-  window.teacup.Chalice = Chalice
+    Teacup::[tagName] = (args...) -> @selfClosingTag args...

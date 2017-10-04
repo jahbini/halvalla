@@ -4,7 +4,7 @@
 ###
 
 module.exports = class Teact
-  constructor:
+  constructor:(@elementCreator)->
     @stack = null
 
   resetStack: (stack=null) ->
@@ -12,7 +12,7 @@ module.exports = class Teact
     @stack = stack
     return previous
 
-  crel: (tagName, args...) ->
+  crel: (tagName, args...) =>
     unless tagName?
       throw new Error "Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: #{tagName}"
     {attrs, contents} = @normalizeArgs args
@@ -24,19 +24,18 @@ module.exports = class Teact
       else
         children = contents
     if children?.splice
-      el = Master.createElement tagName, attrs, children...
+      el = elementCreator tagName, attrs, children...
     else
-      el = Master.createElement tagName, attrs, children
+      el = elementCreator tagName, attrs, children
 
     @stack?.push el
     return el
 
   pureComponent: (contents) ->
-    teact = @
     return ->
-      previous = teact.resetStack null
-      children = contents.apply teact, arguments
-      teact.resetStack previous
+      previous = @.resetStack null
+      children = contents.apply @, arguments
+      @.resetStack previous
       return children
 
   text: (s) ->

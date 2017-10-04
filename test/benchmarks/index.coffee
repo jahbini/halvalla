@@ -1,6 +1,6 @@
 {Suite} = require 'benchmark'
 React = require 'react'
-{crel} = require '../../src/teact'
+{crel} = require '../../src/chalice'
 {render} = require '../helpers'
 
 new Suite()
@@ -10,7 +10,7 @@ new Suite()
         React.createElement 'div', {className: 'bar'}
       )
 
-  .add 'teact', ->
+  .add 'chalice', ->
     render ->
       crel 'div', '.foo', ->
         crel 'div', '.bar'

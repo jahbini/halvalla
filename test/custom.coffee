@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{crel, input, normalizeArgs} = require '../src/teact'
+{crel, input, normalizeArgs} = require '../src/chalice'
 {render} = require './helpers'
 
 describe 'custom crel', ->

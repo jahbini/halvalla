@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{script} = require '../src/teact'
+{script} = require '../src/chalice'
 {render} = require './helpers'
 
 describe 'HereDocs', ->

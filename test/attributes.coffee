@@ -1,12 +1,12 @@
 expect = require 'expect.js'
-{a, br, div} = require '../src/teact'
-{render} = require './helpers'
+{a, br, div,render} = require '../src/chalice'
 
 describe 'Attributes', ->
 
   describe 'with a hash', ->
     it 'renders the corresponding HTML attributes', ->
-      template = -> a href: '/', title: 'Home'
+      template = ->
+          a href: '/', title: 'Home'
       expect(render template).to.equal '<a href="/" title="Home"></a>'
 
   describe 'data attribute', ->
@@ -19,4 +19,5 @@ describe 'Attributes', ->
       template = ->
         div 'data-on-x': 'beep', ->
           div 'data-on-y': 'boop'
+      debugger
       expect(render template).to.equal '<div data-on-x="beep"><div data-on-y="boop"></div></div>'

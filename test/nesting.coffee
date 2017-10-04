@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{div, span, p, pureComponent} = require '../src/teact'
+{div, span, p, pureComponent} = require '../src/chalice'
 {render} = require './helpers'
 
 describe 'nesting templates', ->

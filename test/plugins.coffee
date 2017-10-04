@@ -1,6 +1,6 @@
 expect = require 'expect.js'
-teact = require '../src/teact'
+chalice = require '../src/chalice'
 
 describe 'plugins', ->
   it 'are applied via use', ->
-    expect(teact.use).to.be.a 'function'
+    expect(chalice.use).to.be.a 'function'

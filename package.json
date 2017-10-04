@@ -66,7 +66,9 @@
     "expect.js": "^0.3.1",
     "jsdom": "9.12.0",
     "mithril": "^1.1.4",
-    "mocha": "^2.3.3",
+    "mocha": ">=3.1.0",
+    "node-debug": "^0.1.0",
+    "node-inspector": "^1.1.1",
     "react": "15.4.1",
     "react-dom": "15.4.1"
   },
@@ -107,7 +109,7 @@
     "compile": "coffee --compile --output lib/ src/",
     "prepublish": "npm run compile",
     "pretest": "npm run compile",
-    "test": "mocha --require test/setup.coffee"
+    "test": "mocha -d --require test/setup.coffee"
   },
-  "version": "1.4.0"
+  "version": "0.0.1"
 }

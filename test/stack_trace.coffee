@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{div, p} = require '../src/teact'
+{div, p} = require '../src/chalice'
 {render} = require './helpers'
 
 describe 'stack trace', ->

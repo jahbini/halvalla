@@ -1,4 +1,3 @@
-ReactDOM = require 'react-dom/server'
 
 module.exports.react =
   render: (template, args...) ->
@@ -8,7 +7,6 @@ module.exports.react =
 
 M = require 'Mithril'
 #renderer = require 'mithril-node-render'
-renderer = require '../helpers/mnr.coffee'
 
 module.exports =
   render: (template, args...) ->

@@ -4,26 +4,6 @@
 
 ###
 # The oracle, a globally supplied object to this module has this signature
-# oracle = Oracle =
-  name: 'Mithril'
-  isValidElement: (c)->c.view?
-  createElement: Mithril
-###
-teact = require '../src/teact.coffee'
-teacup = require '../src/teacup.coffee'
-
-GreatEmptiness = class GreatEmptiness
-  constructor: (@props)-> @
-  isValidElement: (c)->c.view?
-  name: 'great-emptiness'
-  Component: {}
-  createElement: (@props)-> @
-  summoner: teact
-  conjurer: teacup
-
-
-oracle = new GreatEmptiness extends Oracle ||{}
-###
 Examples of oracle -- the default is to do Teacup to HTML
   ReactDom = require 'react-dom'
   Oracle =
@@ -39,58 +19,78 @@ Examples of oracle -- the default is to do Teacup to HTML
     isValidElement: (c)->c.view?
     createElement: Mithril
     Component: {}
+
 ###
+#teact = require '../src/teact.coffee'
+{doctypes,elements,mergeElements} = require '../src/html-tags'
+teacup = require '../src/teacup.coffee'
+#if we are using React as the master, it supplies a class, otherwise an empty class with an empty view
+dummyComponent = class Component
+   constructor:(@tagName,@props,@children)->
+     @
+   view: ->
 
+GreatEmptiness = class GreatEmptiness
+  constructor: (oracle = {})->
+    return me if me?
+    @teacup=new teacup
+    defaultObject =
+      isValidElement: (c)->c.view?
+      name: 'great-emptiness'
+      Component: {}
+      createElement: (args...)-> new dummyComponent args...
+      summoner: null
+      conjurer: @teacup.render.bind @teacup
+    # decorate this singleton with
+    for key,value of Object.assign defaultObject, oracle
+      GreatEmptiness::[key] = value
+    GreatEmptiness::me = @
+    @
+#
+# global Oracle
+#
+oracle = new GreatEmptiness Oracle?
 
-# server-side 'only' -- client side only if you really, really know what you do
-doctypes =
-  'default': '<!DOCTYPE html>'
-  '5': '<!DOCTYPE html>'
-  'xml': '<?xml version="1.0" encoding="utf-8" ?>'
-  'transitional': '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'
-  'strict': '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'
-  'frameset': '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">'
-  '1.1': '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">'
-  'basic': '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">'
-  'mobile': '<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.2//EN" "http://www.openmobilealliance.org/tech/DTD/xhtml-mobile12.dtd">'
-  'ce': '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "ce-html-1.0-transitional.dtd">'
-
-elements =
-  # Valid HTML 5 elements requiring a closing tag.
-  # Note: the `var` element is out for obvious reasons, please use `tag 'var' or crel 'var'.
-  regular: 'a abbr address article aside audio b bdi bdo blockquote body button
- canvas caption cite code colgroup datalist dd del details dfn div dl dt em
- fieldset figcaption figure footer form h1 h2 h3 h4 h5 h6 head header hgroup
- html i iframe ins kbd label legend li map mark menu meter nav noscript object
- ol optgroup option output p pre progress q rp rt ruby s samp section
- select small span strong sub summary sup table tbody td textarea tfoot
- th thead time title tr u ul video'
-
-  raw: 'style'
-
-  script: 'script'
-
-  # Valid self-closing HTML 5 elements.
-  void: 'area base br col command embed hr img input keygen link meta param
- source track wbr'
-
-  obsolete: 'applet acronym bgsound dir frameset noframes isindex listing
- nextid noembed plaintext rb strike xmp big blink center font marquee multicol
- nobr spacer tt'
-
-  obsolete_void: 'basefont frame'
-
-# Create a unique list of element names merging the desired groups.
-merge_elements = (args...) ->
-  result = []
-  for a in args
-    for element in elements[a].split ' '
-      result.push element unless element in result
-  result
-
-
+#
 class Chalice
   constructor: ->
+    @stack = null
+
+  resetStack: (stack=null) ->
+    previous = @stack
+    @stack = stack
+    return previous
+
+  crel: (tagName, args...) =>
+    unless tagName?
+      throw new Error "Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: #{tagName}"
+    {attrs, contents} = @normalizeArgs args
+    switch typeof contents
+      when 'function'
+        previous = @resetStack []
+        contents()
+        children = @resetStack previous
+      else
+        children = contents
+    if children?.splice
+      el = oracle.createElement tagName, attrs, children...
+    else
+      el = oracle.createElement tagName, attrs, children
+
+    @stack?.push el
+    return el
+
+  pureComponent: (contents) ->
+    return ->
+      previous = @.resetStack null
+      children = contents.apply @, arguments
+      @.resetStack previous
+      return children
+
+  text: (s) ->
+    return s unless s?.toString
+    @stack?.push(s.toString())
+    return s.toString()
 
   isSelector: (string) ->
     string.length > 1 and string.charAt(0) in ['#', '.']
@@ -126,7 +126,7 @@ class Chalice
           if arg.constructor == Object
             attrs = arg
           arg = arg.default if arg.default && arg.__esModule
-          if arg.constructor == Object and not Oracle.isValidElement arg
+          if arg.constructor == Object and not oracle.isValidElement arg
             attrs = Object.keys(arg).reduce(
               (clone, key) -> clone[key] = arg[key]; clone
               {}
@@ -156,53 +156,6 @@ class Chalice
 
     return {attrs, contents, selector}
 
-
-  coffeescript: (fn) ->
-    @raw """<script type="text/javascript">(function() {
-      var __slice = [].slice,
-          __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
-          __hasProp = {}.hasOwnProperty,
-          __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-      (#{@escape fn.toString()})();
-    })();</script>"""
-
-  comment: (text) ->
-    @raw "<!--#{@escape text}-->"
-
-  doctype: (type=5) ->
-    @raw doctypes[type]
-
-  ie: (condition, contents) ->
-    @raw "<!--[if #{@escape condition}]>"
-    @renderContents contents
-    @raw "<![endif]-->"
-
-  text: (s) ->
-    unless @htmlOut?
-      throw new Error("Chalice: can't call a tag function outside a rendering context")
-    @htmlOut += s? and @escape(s.toString()) or ''
-    null
-
-  raw: (s) ->
-    return unless s?
-    @htmlOut += s
-    null
-
-  #
-  # Filters
-  # return strings instead of appending to buffer
-  #
-
-  # Don't escape single quote (') because we always quote attributes with double quote (")
-  escape: (text) ->
-    text.toString().replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-
-  quote: (value) ->
-    "\"#{value}\""
-
   #
   # Plugins
   #
@@ -210,14 +163,21 @@ class Chalice
     plugin @
 
   #
+  # rendering
+  #
+  render: (nodes,rest...)->
+    structure = nodes rest...
+    oracle.conjurer structure
+
+
+  #
   # Binding
   #
   tags: ->
     bound = {}
-
     boundMethodNames = [].concat(
       'cede coffeescript comment component doctype escape ie normalizeArgs raw render renderable script tag text use'.split(' ')
-      merge_elements 'regular', 'obsolete', 'raw', 'void', 'obsolete_void'
+      mergeElements 'regular', 'obsolete', 'raw', 'void', 'obsolete_void'
     )
     for method in boundMethodNames
       do (method) =>
@@ -225,16 +185,12 @@ class Chalice
 
     return bound
 
-  #if we are using React as the master, it supplies a class, otherwise an empty class with an empty view
-  dummyComponent = class Component
-     view: ->
-  Component: ()-> return if Oracle.Component then Oracle.Component else dummyComponent
 
-  bless: (Component,itsName=null)->
-    Component = Component.default if Component.__esModule && Component.default
-    name = itsName || Component.name
+  bless: (component,itsName=null)->
+    component = component.default if component.__esModule && component.default
+    name = itsName || component.name
     blessedTags[name]=name
-    Chalice::[name] = (args...) => @crel Component, args...
+    Chalice::[name] = (args...) => @crel component, args...
 
   component: (func) ->
     (args...) =>
@@ -245,21 +201,21 @@ class Chalice
       func.apply @, [selector, attrs, renderContents]
 
 # Define tag functions on the prototype for pretty stack traces
-for tagName in merge_elements 'regular', 'obsolete'
+for tagName in mergeElements 'regular', 'obsolete'
   do (tagName) ->
-    Chalice::[tagName] = (args...) -> @tag tagName, args...
+    Chalice::[tagName] = (args...) -> @crel tagName, args...
 
-for tagName in merge_elements 'raw'
+for tagName in mergeElements 'raw'
   do (tagName) ->
-    Chalice::[tagName] = (args...) -> @rawTag tagName, args...
+    Chalice::[tagName] = (args...) -> @crel tagName, args...
 
-for tagName in merge_elements 'script'
+for tagName in mergeElements 'script'
   do (tagName) ->
-    Chalice::[tagName] = (args...) -> @scriptTag tagName, args...
+    Chalice::[tagName] = (args...) -> @crel tagName, args...
 
-for tagName in merge_elements 'void', 'obsolete_void'
+for tagName in mergeElements 'void', 'obsolete_void'
   do (tagName) ->
-    Chalice::[tagName] = (args...) -> @selfClosingTag tagName, args...
+    Chalice::[tagName] = (args...) -> @crel tagName, args...
 
 if module?.exports
   module.exports = new Chalice().tags()

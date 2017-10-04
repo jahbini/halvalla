@@ -1,7 +1,6 @@
 expect = require 'expect.js'
-{html, head, meta, link, style, title, script, body,
-coffeescript, header, section, nav, footer, h1, h2, ul, li, a, p} = require '../src/teact'
-{render} = require './helpers'
+{render,html, head, meta, link, style, title, script, body,
+coffeescript, header, section, nav, footer, h1, h2, ul, li, a, p} = require '../src/chalice'
 
 describe 'coffeekup.org example', ->
 
