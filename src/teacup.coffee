@@ -1,8 +1,14 @@
 
-{doctypes,elements,mergeElements} = require '../src/html-tags'
+{doctypes,elements,mergeElements,allTags} = require '../src/html-tags'
 module.exports = Teacup = class Teacup
-  constructor: ->
+  constructor: (@instantiator)->
     @htmlOut = null
+    @functionOut = null
+
+  resetFunctionBuffer: (html=null) ->
+    previous = @functionOut
+    @functionOut = html
+    return previous
 
   resetBuffer: (html=null) ->
     previous = @htmlOut
@@ -10,20 +16,38 @@ module.exports = Teacup = class Teacup
     return previous
 
   march: (component)->
-    return '' unless component
-    switch typeof component
-      when 'string' then @text component
-      when 'array' then @march c for c in component
-      when 'object'
-        tagName = component.tagName
-        @text @[tagName] component
-        return
-      else
-        debugger
-        @text "bad component?"
-        @text component.toString()
-        return
-
+      return '' unless (value=component?.toString())
+      switch typeof component
+        when 'function' then @march @instantiator component
+        when 'string','number' then @raw component.toString()
+        when (Array.isArray component) && 'object'
+          @march c for c in component
+        when (value != '[object Object]') && 'object'
+          @textOnly component
+        when 'object'
+          try
+            tagName = component.tagName
+            if 'function' == typeof tagName
+              #debugger
+              #this component has not been instantiated yet
+              tagConstructor = tagName
+              tagName = tagConstructor.name
+              node = new tagConstructor tagName,component.props,component.children
+              unless Teacup::[tagName]  #generate alias for stack dumps
+                Teacup::[tagName]= (tagName, component, args...) -> @tag component,args...
+              @march node
+            else
+              #node has been istantiated
+              result = @[tagName] component
+              @raw result
+          catch
+            debugger
+        else
+          debugger
+          @textOnly "bad component?"
+          @textOnly component.toString()
+          return
+      return
 
   render: (component) ->
     previous = @resetBuffer('')
@@ -50,6 +74,7 @@ module.exports = Teacup = class Teacup
         template.apply @, args
 
   renderAttr: (name, value) ->
+    return '' if name == 'className' # && !oracle.useClassName
     if not value?
       return " #{name}"
 
@@ -84,16 +109,19 @@ module.exports = Teacup = class Teacup
       return
     else if typeof contents is 'function'
       result = contents.apply @, rest
-      @text result if typeof result is 'string'
+      @textOnly result if typeof result is 'string'
     else
-      @text contents
+      @textOnly contents
 
 
   tag: (cell) ->
     {tagName, props, children} = cell
-    @raw "<#{tagName}#{@renderAttrs props}>"
-    @march children
-    @raw "</#{tagName}>"
+    @raw "<#{tagName}#{@renderAttrs props}>" unless tagName == 'text'
+    if props.dangerouslySetInnerHTML
+      @raw props.dangerouslySetInnerHTML.__html
+    else
+      @march children
+    @raw "</#{tagName}>" unless tagName == 'text'
 
   rawTag: (cell) ->
     {tagName, props, children} = cell
@@ -112,9 +140,9 @@ module.exports = Teacup = class Teacup
     {tagName, props, children} = cell
     if children
       throw new Error "Chalice: <#{tagName}/> must not have content.  Attempted to nest #{children}"
-    @raw "<#{tagName}#{@renderAttrs props}/>"
+    @raw "<#{tagName}#{@renderAttrs props} />"
 
-  coffeescript: (fn) ->
+  coffeescriptTag: (fn) ->
     @raw """<script type="text/javascript">(function() {
       var __slice = [].slice,
           __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
@@ -123,10 +151,10 @@ module.exports = Teacup = class Teacup
       (#{@escape fn.toString()})();
     })();</script>"""
 
-  comment: (text) ->
-    @raw "<!--#{@escape text}-->"
+  commentTag: (text) ->
+    @raw "<!--#{@escape text.children}-->"
 
-  doctype: (type=5) ->
+  doctypeTag: (type=5) ->
     @raw doctypes[type]
 
   ie: (condition, contents) ->
@@ -134,15 +162,17 @@ module.exports = Teacup = class Teacup
     @renderContents contents
     @raw "<![endif]-->"
 
-  text: (s) ->
+  textOnly: (s) ->
     unless @htmlOut?
       throw new Error("Chalice: can't call a tag function outside a rendering context")
     @htmlOut += s? and @escape(s.toString()) or ''
+    #console.log "text appends ",s? and @escape(s.toString()) or ''
     null
 
   raw: (s) ->
     return unless s?
     @htmlOut += s
+    #console.log "raw appends ",s? and @escape(s.toString()) or ''
     null
 
   #
@@ -160,7 +190,6 @@ module.exports = Teacup = class Teacup
   quote: (value) ->
     "\"#{value}\""
 
-
   component: (func) ->
     (args...) =>
       {selector, attrs, contents} = @normalizeArgs(args)
@@ -168,6 +197,8 @@ module.exports = Teacup = class Teacup
         args.unshift contents
         @renderContents.apply @, args
       func.apply @, [selector, attrs, renderContents]
+    tagRender (component,args...)->
+      a=component.view args...
 # Define tag functions on the prototype for pretty stack traces
 for tagName in mergeElements 'regular', 'obsolete'
   do (tagName) ->
@@ -176,6 +207,14 @@ for tagName in mergeElements 'regular', 'obsolete'
 for tagName in mergeElements 'raw'
   do (tagName) ->
     Teacup::[tagName] = (args...) -> @rawTag args...
+
+for tagName in mergeElements 'coffeescript'
+  do (tagName) ->
+    Teacup::[tagName] = (args...) -> @coffeescriptTag args...
+
+for tagName in mergeElements 'comment'
+  do (tagName) ->
+    Teacup::[tagName] = (args...) -> @commentTag args...
 
 for tagName in mergeElements 'script'
   do (tagName) ->

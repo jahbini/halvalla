@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{renderable, doctype, html, head, meta, link, style, title, script, body,
+{render,html, head, meta, link, style, title, script, body,
 coffeescript, header, section, nav, footer, h1, h2, ul, li, a, p} = require '../src/chalice'
 
 describe 'coffeekup.org example', ->
@@ -11,22 +11,14 @@ describe 'coffeekup.org example', ->
     max = 12
     shoutify = (s) -> s.toUpperCase() + '!'
 
-    template = renderable ->
-      doctype 5
+    template = ->
       html ->
         head ->
-          meta charset: 'utf-8'
+          meta charSet: 'utf-8'
           title "#{x.title or 'Untitled'} | My awesome website"
           meta(name: 'description', content: desc) if desc?
           link rel: 'stylesheet', href: '/stylesheets/app.css'
-          style '''
-            body {font-family: sans-serif}
-            header, nav, section, footer {display: block}
-          '''
           script src: '/javascripts/jquery.js'
-          # coffeescript ->   #JAH restore this section
-          #   $ ->
-          #     alert 'Alerts are so annoying...'
         body ->
           header ->
             h1 x.title or 'Untitled'
@@ -46,5 +38,5 @@ describe 'coffeekup.org example', ->
             p i for i in [1..max]
           footer ->
             p shoutify('bye')
-    debugger
-    expect(template()).to.contain 'Just Stuff'
+
+    expect(render template).to.contain 'Just Stuff'

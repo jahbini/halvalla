@@ -1,5 +1,6 @@
 expect = require 'expect.js'
-{render, script} = require '../src/chalice'
+{script} = require '../src/chalice'
+{render} = require './helpers'
 
 describe 'HereDocs', ->
   it 'preserves line breaks', ->
@@ -8,4 +9,4 @@ describe 'HereDocs', ->
         alert('test');
       });
     """
-    expect(render template).to.equal '<script>$(document).ready(function(){\n  alert(\'test\');\n});</script>'
+    expect(render template).to.equal '<script>$(document).ready(function(){\n  alert(&#x27;test&#x27;);\n});</script>'

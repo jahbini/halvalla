@@ -22,61 +22,90 @@ Examples of oracle -- the default is to do Teacup to HTML
 
 ###
 #teact = require '../src/teact.coffee'
-{doctypes,elements,mergeElements} = require '../src/html-tags'
+{doctypes,elements,mergeElements,allTags} = require '../src/html-tags'
 teacup = require '../src/teacup.coffee'
 #if we are using React as the master, it supplies a class, otherwise an empty class with an empty view
 dummyComponent = class Component
-   constructor:(@tagName,@props,@children)->
+   constructor:(tagName,@props={},@children...)->
+     @children = @children[0] if @children.length ==1
+     @tagName = tagName
      @
    view: ->
+   render: ->
 
 GreatEmptiness = class GreatEmptiness
-  constructor: (oracle = {})->
+  constructor: (instantiator,Oracle)->
     return me if me?
-    @teacup=new teacup
+    @teacup=new teacup instantiator
     defaultObject =
       isValidElement: (c)->c.view?
       name: 'great-emptiness'
-      Component: {}
+      Component: dummyComponent
       createElement: (args...)-> new dummyComponent args...
       summoner: null
       conjurer: @teacup.render.bind @teacup
     # decorate this singleton with
-    for key,value of Object.assign defaultObject, oracle
+    for key,value of Object.assign defaultObject, Oracle?
       GreatEmptiness::[key] = value
     GreatEmptiness::me = @
     @
 #
 # global Oracle
 #
-oracle = new GreatEmptiness Oracle?
 
 #
 class Chalice
-  constructor: ->
+  oracle=null
+  constructor: (Oracle=null)->
     @stack = null
+    oracle = new GreatEmptiness @instantiator,Oracle
 
   resetStack: (stack=null) ->
     previous = @stack
     @stack = stack
     return previous
 
+  instantiator: (funct,args...)=>
+    previous = @resetStack []
+    result=funct args...
+    stackHad=@resetStack previous
+    stackHad.push result if stackHad.length == 0
+    return stackHad
+
+  raw: (text)->
+    unless text.toString
+      throw new Error "raw allows text only: expected a string"
+    el = oracle.createElement 'text',dangerouslySetInnerHTML: __html: text.toString()
+    @stack?.push el
+    return el
+
+  doctype: (type=5) ->
+    @raw doctypes[type]
+
+  tag: (tagName,args...) =>
+    unless tagName? && 'string'== typeof tagName
+      throw new Error "HTML tag type is invalid: expected a string but got #{typeof tagName?}"
+    @crel tagname,args...
+
+
   crel: (tagName, args...) =>
     unless tagName?
       throw new Error "Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: #{tagName}"
     {attrs, contents} = @normalizeArgs args
-    switch typeof contents
-      when 'function'
-        previous = @resetStack []
-        contents()
-        children = @resetStack previous
-      else
-        children = contents
+    #switch typeof contents
+    #  when 'function'
+    #    previous = @resetStack []
+    #    contents()
+    #    children = @resetStack previous
+    #  else
+    #    children = contents
+    children = contents
     if children?.splice
       el = oracle.createElement tagName, attrs, children...
     else
       el = oracle.createElement tagName, attrs, children
-
+    #debugger
+    #console.log "Crel created el=",el
     @stack?.push el
     return el
 
@@ -162,35 +191,45 @@ class Chalice
   use: (plugin) ->
     plugin @
 
+  renderable: (stuff)=>
+    return (args...) =>
+      oracle.conjurer @instantiator stuff, args...
   #
   # rendering
   #
-  render: (nodes,rest...)->
-    structure = nodes rest...
+  render: (node,rest...)->
+    previous = @.resetStack null
+    try
+      structure = node rest...
+    catch
+      debugger
+    @.resetStack previous
     oracle.conjurer structure
-
-
   #
   # Binding
   #
   tags: ->
     bound = {}
     boundMethodNames = [].concat(
-      'cede coffeescript comment component doctype escape ie normalizeArgs raw render renderable script tag text use'.split(' ')
-      mergeElements 'regular', 'obsolete', 'raw', 'void', 'obsolete_void'
+      'bless cede component doctype escape ie normalizeArgs oracle raw render renderable tag text use'.split(' ')
+      mergeElements 'regular', 'obsolete', 'raw', 'void', 'obsolete_void', 'script','coffeescript','comment'
     )
     for method in boundMethodNames
       do (method) =>
-        bound[method] = (args...) => @[method].apply @, args
+        allTags[method]= bound[method] = (args...) =>
+          try
+             @[method].apply @, args
+          catch badDog
+            throw "no method named #{method} in chalice"
 
     return bound
 
+  oracle: ()-> oracle
 
   bless: (component,itsName=null)->
     component = component.default if component.__esModule && component.default
     name = itsName || component.name
-    blessedTags[name]=name
-    Chalice::[name] = (args...) => @crel component, args...
+    allTags[name]= Chalice::[name] = (args...) => @crel component, args...
 
   component: (func) ->
     (args...) =>
@@ -203,19 +242,19 @@ class Chalice
 # Define tag functions on the prototype for pretty stack traces
 for tagName in mergeElements 'regular', 'obsolete'
   do (tagName) ->
-    Chalice::[tagName] = (args...) -> @crel tagName, args...
+    allTags[tagName]= Chalice::[tagName] = (args...) -> @crel tagName, args...
 
 for tagName in mergeElements 'raw'
   do (tagName) ->
-    Chalice::[tagName] = (args...) -> @crel tagName, args...
+    allTags[tagName]= Chalice::[tagName] = (args...) -> @crel tagName, args...
 
-for tagName in mergeElements 'script'
+for tagName in mergeElements 'script','coffeescript','comment'
   do (tagName) ->
-    Chalice::[tagName] = (args...) -> @crel tagName, args...
+    allTags[tagName]= Chalice::[tagName] = (args...) -> @crel tagName, args...
 
 for tagName in mergeElements 'void', 'obsolete_void'
   do (tagName) ->
-    Chalice::[tagName] = (args...) -> @crel tagName, args...
+    allTags[tagName]= Chalice::[tagName] = (args...) -> @crel tagName, args...
 
 if module?.exports
   module.exports = new Chalice().tags()

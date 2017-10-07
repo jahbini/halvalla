@@ -20,12 +20,14 @@ elements =
  fieldset figcaption figure footer form h1 h2 h3 h4 h5 h6 head header hgroup
  html i iframe ins kbd label legend li map mark menu meter nav noscript object
  ol optgroup option output p pre progress q rp rt ruby s samp section
- select small span strong sub summary sup table tbody td textarea tfoot
+ select small span strong sub summary sup table tbody td text textarea tfoot
  th thead time title tr u ul video'
 
   raw: 'style'
 
   script: 'script'
+  coffeescript: 'coffeescript'
+  comment: 'comment'
 
   # Valid self-closing HTML 5 elements.
   void: 'area base br col command embed hr img input keygen link meta param
@@ -49,3 +51,4 @@ module.exports=
   doctypes: doctypes
   elements: elements
   mergeElements: mergeElements
+  allTags:{}

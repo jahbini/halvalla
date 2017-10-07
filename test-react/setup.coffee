@@ -18,4 +18,4 @@ for key,val of document.defaultView
     if typeof global[key] == 'undefined'
         exposedProperties.push val
 # Allow for things like window.location
-global.navigator = userAgent: 'node.js' 
+global.navigator = userAgent: 'node.js'
