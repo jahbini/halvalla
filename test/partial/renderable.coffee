@@ -11,7 +11,7 @@ describe 'renderable decorator', ->
       .to.equal '<div>a</div><div>b</div><div>c</div>'
 
   it 'supports composition with renderable and non-renderable helpers', ->
-    
+
     renderableHelper = renderable (user) ->
       span user.first
 
@@ -22,6 +22,6 @@ describe 'renderable decorator', ->
       div ->
         renderableHelper(user)
         vanillaHelper(user)
-
+    debugger
     expect(template first:'Huevo', last:'Bueno')
       .to.equal '<div><span>Huevo</span><span>Bueno</span></div>'

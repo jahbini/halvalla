@@ -11,7 +11,6 @@ describe 'text', ->
 
   it 'is assumed when it is returned from contents', ->
     template = -> h1 -> 'hello world'
-    debugger
     expect(render template).to.equal '<h1>hello world</h1>'
     template = -> h1 '.title', -> 'hello world'
     expect(render template).to.equal '<h1 class="title">hello world</h1>'

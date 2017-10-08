@@ -1,5 +1,5 @@
 
-{doctypes,elements,mergeElements,allTags} = require '../src/html-tags'
+{doctypes,elements,mergeElements,allTags,escape,quote} = require '../src/html-tags'
 module.exports = Teacup = class Teacup
   constructor: (@instantiator)->
     @htmlOut = null
@@ -34,12 +34,14 @@ module.exports = Teacup = class Teacup
               tagName = tagConstructor.name
               node = new tagConstructor tagName,component.props,component.children
               unless Teacup::[tagName]  #generate alias for stack dumps
-                Teacup::[tagName]= (tagName, component, args...) -> @tag component,args...
+                Teacup::[tagName]= (component, args...) -> @tag component,args...
               @march node
             else
               #node has been istantiated
-              result = @[tagName] component
-              @raw result
+              unless Teacup::[tagName]  #generate alias for stack dumps
+                Teacup::[tagName]= (component, args...) -> @tag component,args...
+              #render the node and append it to the htmlOout string
+              @[tagName] component
           catch
             debugger
         else
@@ -87,7 +89,7 @@ module.exports = Teacup = class Teacup
     if value is true
       value = name
 
-    return " #{name}=#{@quote @escape value.toString()}"
+    return " #{name}=#{quote escape value.toString()}"
 
   attrOrder: ['id', 'class']
   renderAttrs: (obj) ->
@@ -138,67 +140,44 @@ module.exports = Teacup = class Teacup
 
   selfClosingTag: (cell) ->
     {tagName, props, children} = cell
-    if children
+    if children && children != []
       throw new Error "Chalice: <#{tagName}/> must not have content.  Attempted to nest #{children}"
     @raw "<#{tagName}#{@renderAttrs props} />"
 
-  coffeescriptTag: (fn) ->
+  coffeescriptTag: (cell) ->
+    fn = cell.children
     @raw """<script type="text/javascript">(function() {
       var __slice = [].slice,
           __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
           __hasProp = {}.hasOwnProperty,
           __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-      (#{@escape fn.toString()})();
+      (#{escape fn.toString()})();
     })();</script>"""
 
   commentTag: (text) ->
-    @raw "<!--#{@escape text.children}-->"
+    @raw "<!--#{escape text.children}-->"
 
   doctypeTag: (type=5) ->
     @raw doctypes[type]
 
-  ie: (condition, contents) ->
-    @raw "<!--[if #{@escape condition}]>"
-    @renderContents contents
+  ie: (cell)->
+    @raw "<!--[if #{escape cell.props.condition}]>"
+    @march cell.children
     @raw "<![endif]-->"
 
   textOnly: (s) ->
     unless @htmlOut?
       throw new Error("Chalice: can't call a tag function outside a rendering context")
-    @htmlOut += s? and @escape(s.toString()) or ''
-    #console.log "text appends ",s? and @escape(s.toString()) or ''
+    @htmlOut += s? and escape(s.toString()) or ''
+    #console.log "text appends ",s? and escape(s.toString()) or ''
     null
 
   raw: (s) ->
     return unless s?
     @htmlOut += s
-    #console.log "raw appends ",s? and @escape(s.toString()) or ''
+    #console.log "raw appends ",s? and escape(s.toString()) or ''
     null
 
-  #
-  # Filters
-  # return strings instead of appending to buffer
-  #
-
-  # Don't escape single quote (') because we always quote attributes with double quote (")
-  escape: (text) ->
-    text.toString().replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-
-  quote: (value) ->
-    "\"#{value}\""
-
-  component: (func) ->
-    (args...) =>
-      {selector, attrs, contents} = @normalizeArgs(args)
-      renderContents = (args...) =>
-        args.unshift contents
-        @renderContents.apply @, args
-      func.apply @, [selector, attrs, renderContents]
-    tagRender (component,args...)->
-      a=component.view args...
 # Define tag functions on the prototype for pretty stack traces
 for tagName in mergeElements 'regular', 'obsolete'
   do (tagName) ->

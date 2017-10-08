@@ -22,7 +22,7 @@ Examples of oracle -- the default is to do Teacup to HTML
 
 ###
 #teact = require '../src/teact.coffee'
-{doctypes,elements,mergeElements,allTags} = require '../src/html-tags'
+{doctypes,elements,mergeElements,allTags,escape,quote} = require '../src/html-tags'
 teacup = require '../src/teacup.coffee'
 #if we are using React as the master, it supplies a class, otherwise an empty class with an empty view
 dummyComponent = class Component
@@ -59,7 +59,8 @@ class Chalice
   constructor: (Oracle=null)->
     @stack = null
     oracle = new GreatEmptiness @instantiator,Oracle
-
+  escape:escape
+  quote:quote
   resetStack: (stack=null) ->
     previous = @stack
     @stack = stack
@@ -82,23 +83,49 @@ class Chalice
   doctype: (type=5) ->
     @raw doctypes[type]
 
+  oracle: ()-> oracle
+  ie: (condition,contents)=>
+    @crel 'ie',condition:condition,contents
+
   tag: (tagName,args...) =>
     unless tagName? && 'string'== typeof tagName
       throw new Error "HTML tag type is invalid: expected a string but got #{typeof tagName?}"
-    @crel tagname,args...
+    {attrs, contents} = @normalizeArgs args
+    children = contents
+    if children?.splice
+      el = oracle.createElement tagName, attrs, children...
+    else
+      el = oracle.createElement tagName, attrs, children
+    allTags[tagName]= Chalice::[tagName] = el
 
+  bless: (component,itsName=null)->
+    component = component.default if component.__esModule && component.default
+    name = itsName || component.name
+    allTags[name]= Chalice::[name] = (args...) => @crel component, args...
+
+  component: (func) ->
+    (args...) =>
+      {selector, attrs, contents} = @normalizeArgs(args)
+      renderContents = (args...) =>
+        args.unshift contents
+        @renderContents.apply @, args
+      func.apply @, [selector, attrs, renderContents]
+
+
+  crelVoid: (tagName, args...) =>
+    {attrs, contents} = @normalizeArgs args
+    if contents
+      throw new Error "Element type is invalid: must not have content: #{tagName}"
+    el = oracle.createElement tagName, attrs,null
+    #debugger
+    #console.log "CrelVoid created el=",el
+    @stack?.push el
+    return el
 
   crel: (tagName, args...) =>
     unless tagName?
       throw new Error "Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: #{tagName}"
     {attrs, contents} = @normalizeArgs args
-    #switch typeof contents
-    #  when 'function'
-    #    previous = @resetStack []
-    #    contents()
-    #    children = @resetStack previous
-    #  else
-    #    children = contents
     children = contents
     if children?.splice
       el = oracle.createElement tagName, attrs, children...
@@ -196,7 +223,9 @@ class Chalice
       oracle.conjurer @instantiator stuff, args...
   #
   # rendering
-  #
+  cede: (args...)->
+    @render args...
+
   render: (node,rest...)->
     previous = @.resetStack null
     try
@@ -217,27 +246,11 @@ class Chalice
     for method in boundMethodNames
       do (method) =>
         allTags[method]= bound[method] = (args...) =>
-          try
-             @[method].apply @, args
-          catch badDog
-            throw "no method named #{method} in chalice"
+          if !@[method]
+            throw "no method named #{method} in Chalice"
+          @[method].apply @, args
 
     return bound
-
-  oracle: ()-> oracle
-
-  bless: (component,itsName=null)->
-    component = component.default if component.__esModule && component.default
-    name = itsName || component.name
-    allTags[name]= Chalice::[name] = (args...) => @crel component, args...
-
-  component: (func) ->
-    (args...) =>
-      {selector, attrs, contents} = @normalizeArgs(args)
-      renderContents = (args...) =>
-        args.unshift contents
-        @renderContents.apply @, args
-      func.apply @, [selector, attrs, renderContents]
 
 # Define tag functions on the prototype for pretty stack traces
 for tagName in mergeElements 'regular', 'obsolete'
@@ -252,9 +265,11 @@ for tagName in mergeElements 'script','coffeescript','comment'
   do (tagName) ->
     allTags[tagName]= Chalice::[tagName] = (args...) -> @crel tagName, args...
 
+#allTags['ie']= Chalice::['ie'] = (args...) -> @ie args...
+
 for tagName in mergeElements 'void', 'obsolete_void'
   do (tagName) ->
-    allTags[tagName]= Chalice::[tagName] = (args...) -> @crel tagName, args...
+    allTags[tagName]= Chalice::[tagName] = (args...) -> @crelVoid tagName, args...
 
 if module?.exports
   module.exports = new Chalice().tags()

@@ -47,8 +47,22 @@ mergeElements = (args...) ->
       result.push element unless element in result
   result
 
+# utility pure functions
+
+# Don't escape single quote (') because we always quote attributes with double quote (")
+escape= (text) ->
+  text.toString().replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+
+quote= (value) ->
+  "\"#{value}\""
+
 module.exports=
   doctypes: doctypes
   elements: elements
   mergeElements: mergeElements
+  escape:escape
+  quote:quote
   allTags:{}
