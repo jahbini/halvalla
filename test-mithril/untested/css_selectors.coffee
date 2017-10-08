@@ -1,6 +1,5 @@
 expect = require 'expect.js'
-{div, img} = require '../src/chalice'
-{render} = require './helpers'
+{render, div, img} = require '../src/chalice'
 
 describe 'CSS Selectors', ->
   describe 'id selector', ->
@@ -19,7 +18,7 @@ describe 'CSS Selectors', ->
 
     describe 'and a class attribute', ->
       it 'prepends the selector class', ->
-        template = -> div '.myclass', 'className': 'myattrclass', 'foo'
+        template = -> div '.myclass', 'class': 'myattrclass', 'foo'
         expect(render template).to.equal '<div class="myclass myattrclass">foo</div>'
 
   describe 'multi-class selector', ->
@@ -29,10 +28,11 @@ describe 'CSS Selectors', ->
 
   describe 'with an id and classes, separated by spaces', ->
     it 'adds ids and classes with minimal whitespace', ->
-      template = -> div '#myid.myclass1 .myclass2 '
+      template = -> div '#myid .myclass1 .myclass2 '
       expect(render template).to.equal '<div id="myid" class="myclass1 myclass2"></div>'
 
   describe 'without contents', ->
     it 'still adds attributes', ->
       template = -> img '#myid.myclass', src: '/pic.png'
-      expect(render template).to.equal '<img src="/pic.png" id="myid" class="myclass"/>'
+      expect(render template).to.equal '<img id="myid" class="myclass" src="/pic.png" />'
+

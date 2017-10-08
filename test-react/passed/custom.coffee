@@ -1,17 +1,17 @@
 expect = require 'expect.js'
-{crel, input, normalizeArgs} = require '../src/chalice'
-{render} = require './helpers'
+{render,tag, input, normalizeArgs} = require '../src/chalice-react'
+#{render} = require './helpers'
 
-describe 'custom crel', ->
+describe 'custom tag', ->
   it 'should render', ->
-    template = -> crel 'custom'
+    template = -> tag 'custom'
     expect(render template).to.equal '<custom></custom>'
   it 'should render empty given null content', ->
-    template = -> crel 'custom', null
+    template = -> tag 'custom', null
     expect(render template).to.equal '<custom></custom>'
   it 'should render with attributes', ->
-    template = -> crel 'custom', id: 'bar'
+    template = -> tag 'custom', id: 'bar'
     expect(render template).to.equal '<custom id="bar"></custom>'
   it 'should render with attributes and content', ->
-    template = -> crel 'custom', id: 'bar', 'zag'
+    template = -> tag 'custom', id: 'bar', 'zag'
     expect(render template).to.equal '<custom id="bar">zag</custom>'

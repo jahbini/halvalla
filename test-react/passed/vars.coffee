@@ -1,6 +1,6 @@
 expect = require 'expect.js'
-{h1} = require '../src/chalice'
-{render} = require './helpers'
+{h1,render} = require '../src/chalice-react'
+#{render} = require './helpers'
 
 describe 'Context data', ->
   it 'is an argument to the template function', ->

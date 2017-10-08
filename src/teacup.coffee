@@ -1,7 +1,7 @@
 
-{doctypes,elements,mergeElements,allTags,escape,quote} = require '../src/html-tags'
+{doctypes,elements,normalizeArray,mergeElements,allTags,escape,quote} = require '../src/html-tags'
 module.exports = Teacup = class Teacup
-  constructor: (@instantiator)->
+  constructor: (@instantiator,@oracle)->
     @htmlOut = null
     @functionOut = null
 
@@ -26,13 +26,17 @@ module.exports = Teacup = class Teacup
           @textOnly component
         when 'object'
           try
-            tagName = component.tagName
+            tagName = @oracle.getName component
             if 'function' == typeof tagName
               #debugger
               #this component has not been instantiated yet
               tagConstructor = tagName
               tagName = tagConstructor.name
-              node = new tagConstructor tagName,component.props,component.children
+              if component.attrs
+                attrs = component.attrs
+              else
+                attrs = component.props
+              node = new tagConstructor tagName,attrs,component.children
               unless Teacup::[tagName]  #generate alias for stack dumps
                 Teacup::[tagName]= (component, args...) -> @tag component,args...
               @march node
@@ -117,7 +121,9 @@ module.exports = Teacup = class Teacup
 
 
   tag: (cell) ->
-    {tagName, props, children} = cell
+    {children} = cell
+    props=@oracle.getProp cell
+    tagName=@oracle.getName cell
     @raw "<#{tagName}#{@renderAttrs props}>" unless tagName == 'text'
     if props.dangerouslySetInnerHTML
       @raw props.dangerouslySetInnerHTML.__html
@@ -126,21 +132,27 @@ module.exports = Teacup = class Teacup
     @raw "</#{tagName}>" unless tagName == 'text'
 
   rawTag: (cell) ->
-    {tagName, props, children} = cell
+    {children} = cell
+    props=@oracle.getProp cell
+    tagName=@oracle.getName cell
     @raw "<#{tagName}#{@renderAttrs props}>"
     @raw children
     @raw "</#{tagName}>"
 
   scriptTag: (cell) ->
-    {tagName, props, children} = cell
+    {children} = cell
+    props=@oracle.getProp cell
+    tagName=@oracle.getName cell
     @raw "<#{tagName}#{@renderAttrs props}>"
     @renderContents children
     @raw "</#{tagName}>"
 
 
   selfClosingTag: (cell) ->
-    {tagName, props, children} = cell
-    if children && children != []
+    {children} = cell
+    props=@oracle.getProp cell
+    tagName=@oracle.getName cell
+    if (normalizeArray children).length != 0
       throw new Error "Chalice: <#{tagName}/> must not have content.  Attempted to nest #{children}"
     @raw "<#{tagName}#{@renderAttrs props} />"
 

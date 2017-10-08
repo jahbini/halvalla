@@ -1,6 +1,6 @@
 expect = require 'expect.js'
-{text, h1} = require '../src/chalice'
-{render} = require './helpers'
+{render,text, h1} = require '../src/chalice-react'
+#{render} = require './helpers'
 
 describe 'text', ->
   it 'renders text verbatim', ->

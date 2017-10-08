@@ -1,15 +1,14 @@
 expect = require 'expect.js'
-{div, p} = require '../src/chalice'
-{render} = require './helpers'
+{renderable, div, p} = require '../src/chalice'
 
 describe 'stack trace', ->
-  it 'should contain crel names', ->
-    template = ->
+  it 'should contain tag names', ->
+    template = renderable ->
       div ->
         p ->
           throw new Error()
     try
-      render template
+      template()
     catch error
       expect(error.stack).to.contain 'div'
       expect(error.stack).to.contain 'p'

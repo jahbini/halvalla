@@ -1,6 +1,6 @@
 expect = require 'expect.js'
-{raw, script, escape, h1, input} = require '../src/chalice'
-{render} = require './helpers'
+{render,raw, script, escape, h1, input} = require '../src/chalice-react'
+#{render} = require './helpers'
 
 describe 'Auto escaping', ->
   describe 'a script crel', ->
@@ -10,11 +10,11 @@ describe 'Auto escaping', ->
 
   it 'escapes crel attributes', ->
     template = -> input name: '"pwned'
-    expect(render template).to.equal '<input name="&quot;pwned"/>'
+    expect(render template).to.equal '<input name="&quot;pwned" />'
 
   it 'escapea single quotes in crel attributes', ->
     template = -> input name: "'pwned"
-    expect(render template).to.equal '<input name="&#x27;pwned"/>'
+    expect(render template).to.equal '<input name="&#x27;pwned" />'
 
 describe 'script crel', ->
   it 'escapes /', ->

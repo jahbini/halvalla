@@ -38,12 +38,23 @@ elements =
  nobr spacer tt'
 
   obsolete_void: 'basefont frame'
-# Create a unique list of element names merging the desired groups.
 
+normalizeArray= (b)->
+  #turn b to an array of non-empty elements. useful for making all children
+  # look uniform as an array for subsequent iteration
+  # 123 turns into [123], [bob,null,sue] turns into [bob,sue]
+  # nullish input turns into []
+  c=if b?.length then b else [b]
+  return c if c.normalized?
+  d = (v for v in c when v)
+  Object.defineProperty d,'normalized',{value:true,enumerable: false}
+  return d
+
+# Create a unique list of element names merging the desired groups.
 mergeElements = (args...) ->
   result = []
   for a in args
-    for element in elements[a].split ' '
+    for element in (elements[a] || a).split ' '
       result.push element unless element in result
   result
 
@@ -63,6 +74,7 @@ module.exports=
   doctypes: doctypes
   elements: elements
   mergeElements: mergeElements
+  normalizeArray: normalizeArray
   escape:escape
   quote:quote
   allTags:{}

@@ -1,7 +1,7 @@
 expect = require 'expect.js'
-{crel, p, div, script,render} = require '../src/chalice'
+{tag, p, div, script,render} = require '../src/chalice-react'
 
-describe 'crel', ->
+describe 'render', ->
   it 'renders text verbatim', ->
     expect(render -> p 'foobar').to.equal '<p>foobar</p>'
 
@@ -18,7 +18,7 @@ describe 'crel', ->
     expect(render template).to.equal('<script src="js/app.js"></script>')
 
   it 'renders text tags as strings', ->
-    expect(render -> crel.text "Foo").to.equal 'Foo'
+    expect(render -> tag.text "Foo").to.equal 'Foo'
 
   it 'throws on undefined element types', ->
-    expect(-> crel undefined, className: 'foo').to.throwException /got: undefined/
+    expect(-> tag undefined, className: 'foo').to.throwException /got: undefined/

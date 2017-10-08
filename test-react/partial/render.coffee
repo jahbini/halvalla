@@ -1,6 +1,6 @@
 expect = require 'expect.js'
-{raw, cede, div, p, strong, a} = require '../src/chalice'
-{render} = require './helpers'
+{render,raw, cede, div, p, strong, a} = require '../src/chalice-react'
+#{render} = require './helpers'
 
 describe 'render', ->
   describe 'nested in a template', ->
@@ -15,4 +15,4 @@ describe 'render', ->
       p ->
         a '.first', d, "link 1"
         a d, "link 2"
-    expect(render template).to.equal '<p><a id="foobar" href="http://example.com" class="first">link 1</a><a id="foobar" href="http://example.com">link 2</a></p>'
+    expect(render template).to.equal '<p><a id="foobar" class="first" href="http://example.com">link 1</a><a id="foobar" href="http://example.com">link 2</a></p>'

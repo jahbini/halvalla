@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{a, br, div,render} = require '../src/chalice'
+{a, br, div,render} = require '../src/chalice-react'
 
 describe 'Attributes', ->
 
@@ -12,7 +12,7 @@ describe 'Attributes', ->
   describe 'data attribute', ->
     it 'expands attributes', ->
       template = -> br data: { name: 'Name', value: 'Value' }
-      expect(render template).to.equal '<br data-name="Name" data-value="Value"/>'
+      expect(render template).to.equal '<br data-name="Name" data-value="Value" />'
 
   describe 'nested hyphenated attribute', ->
     it 'renders', ->

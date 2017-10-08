@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-chalice = require '../src/chalice'
+chalice = require '../src/chalice-react'
 
 describe 'plugins', ->
   it 'are applied via use', ->

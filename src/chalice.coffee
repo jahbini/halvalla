@@ -25,8 +25,10 @@ Examples of oracle -- the default is to do Teacup to HTML
 {doctypes,elements,mergeElements,allTags,escape,quote} = require '../src/html-tags'
 teacup = require '../src/teacup.coffee'
 #if we are using React as the master, it supplies a class, otherwise an empty class with an empty view
+propertyName = 'props'
 dummyComponent = class Component
-   constructor:(tagName,@props={},@children...)->
+   constructor:(tagName,properties={},@children...)->
+     @[propertyName]=properties
      @children = @children[0] if @children.length ==1
      @tagName = tagName
      @
@@ -34,20 +36,21 @@ dummyComponent = class Component
    render: ->
 
 GreatEmptiness = class GreatEmptiness
-  constructor: (instantiator,Oracle)->
-    return me if me?
-    @teacup=new teacup instantiator
+  constructor: (instantiator,Oracle={})->
     defaultObject =
       isValidElement: (c)->c.view?
       name: 'great-emptiness'
       Component: dummyComponent
       createElement: (args...)-> new dummyComponent args...
       summoner: null
-      conjurer: @teacup.render.bind @teacup
+      getProp: (element)->element.attrs
+      getName: (element)->element.tag
+      conjurer: null
     # decorate this singleton with
-    for key,value of Object.assign defaultObject, Oracle?
+    for key,value of Object.assign defaultObject, Oracle
       GreatEmptiness::[key] = value
-    GreatEmptiness::me = @
+    @teacup=new teacup instantiator,defaultObject
+    @conjurer= @teacup.render.bind @teacup
     @
 #
 # global Oracle
@@ -59,12 +62,20 @@ class Chalice
   constructor: (Oracle=null)->
     @stack = null
     oracle = new GreatEmptiness @instantiator,Oracle
+    propertyName = oracle.propertyName
   escape:escape
   quote:quote
   resetStack: (stack=null) ->
     previous = @stack
     @stack = stack
     return previous
+  pureComponent: (contents) ->
+    return ->
+      previous = @.resetStack null
+      children = contents.apply @, arguments
+      stackHad=@resetStack previous
+      stackHad.push result if stackHad.length == 0
+      return stackHad
 
   instantiator: (funct,args...)=>
     previous = @resetStack []
@@ -136,12 +147,6 @@ class Chalice
     @stack?.push el
     return el
 
-  pureComponent: (contents) ->
-    return ->
-      previous = @.resetStack null
-      children = contents.apply @, arguments
-      @.resetStack previous
-      return children
 
   text: (s) ->
     return s unless s?.toString
@@ -167,7 +172,6 @@ class Chalice
     attrs = {}
     selector = null
     contents = null
-
     for arg, index in args when arg?
       switch typeof arg
         when 'string'
@@ -240,7 +244,7 @@ class Chalice
   tags: ->
     bound = {}
     boundMethodNames = [].concat(
-      'bless cede component doctype escape ie normalizeArgs oracle raw render renderable tag text use'.split(' ')
+      'bless cede component doctype escape ie normalizeArgs pureComponent oracle raw render renderable tag text use'.split(' ')
       mergeElements 'regular', 'obsolete', 'raw', 'void', 'obsolete_void', 'script','coffeescript','comment'
     )
     for method in boundMethodNames
@@ -250,32 +254,30 @@ class Chalice
             throw "no method named #{method} in Chalice"
           @[method].apply @, args
 
+
+    # Define tag functions on the prototype for pretty stack traces
+    for tagName in mergeElements 'regular', 'obsolete'
+      do (tagName) ->
+        allTags[tagName]= Chalice::[tagName] = (args...) -> @crel tagName, args...
+
+    for tagName in mergeElements 'raw'
+      do (tagName) ->
+        allTags[tagName]= Chalice::[tagName] = (args...) -> @crel tagName, args...
+
+    for tagName in mergeElements 'script','coffeescript','comment'
+      do (tagName) ->
+        allTags[tagName]= Chalice::[tagName] = (args...) -> @crel tagName, args...
+
+    #allTags['ie']= Chalice::['ie'] = (args...) -> @ie args...
+
+    for tagName in mergeElements 'void', 'obsolete_void'
+      do (tagName) ->
+        allTags[tagName]= Chalice::[tagName] = (args...) -> @crelVoid tagName, args...
     return bound
-
-# Define tag functions on the prototype for pretty stack traces
-for tagName in mergeElements 'regular', 'obsolete'
-  do (tagName) ->
-    allTags[tagName]= Chalice::[tagName] = (args...) -> @crel tagName, args...
-
-for tagName in mergeElements 'raw'
-  do (tagName) ->
-    allTags[tagName]= Chalice::[tagName] = (args...) -> @crel tagName, args...
-
-for tagName in mergeElements 'script','coffeescript','comment'
-  do (tagName) ->
-    allTags[tagName]= Chalice::[tagName] = (args...) -> @crel tagName, args...
-
-#allTags['ie']= Chalice::['ie'] = (args...) -> @ie args...
-
-for tagName in mergeElements 'void', 'obsolete_void'
-  do (tagName) ->
-    allTags[tagName]= Chalice::[tagName] = (args...) -> @crelVoid tagName, args...
 
 if module?.exports
   module.exports = new Chalice().tags()
   module.exports.Chalice = Chalice
-else if typeof define is 'function' and define.amd
-  define('teacup', [], -> new Chalice().tags())
 else
-  window.teacup = new Chalice().tags()
-  window.teacup.Chalice = Chalice
+  window.Chalice = new Chalice().tags()
+  window.Chalice.Chalice = Chalice

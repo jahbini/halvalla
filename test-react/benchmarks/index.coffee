@@ -1,6 +1,6 @@
 {Suite} = require 'benchmark'
 React = require 'react'
-{crel} = require '../../src/chalice'
+{crel} = require '../../src/chalice-react'
 {render} = require '../helpers'
 
 new Suite()

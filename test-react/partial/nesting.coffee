@@ -1,6 +1,6 @@
 expect = require 'expect.js'
-{div, span, p, pureComponent} = require '../src/chalice'
-{render} = require './helpers'
+{render,div, span, p, pureComponent} = require '../src/chalice-react'
+#{render} = require './helpers'
 
 describe 'nesting templates', ->
   user =
