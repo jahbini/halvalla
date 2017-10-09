@@ -2,10 +2,10 @@
 
 ## The land where HTML deamons are conjured, instantiated and summoned into Three Domains
 
-Valhalla began as an attempt to use Teact to create a react based application without using pointy brackets or back-ticks.  Rude things that bite the syntax and uglify the landscape.
+Valhalla began as an attempt to use Teact to create a React based application without using pointy brackets or back-ticks.  Rude things that bite the syntax and uglify the landscape.
 
-However, react's interfaces have not been stable over the last few years, and
-Teact's interfaces needed updating.  And the advantages of mithril over react (patent issues included) pointed to a better direction for evolution.
+However, React's interfaces have not been stable over the last few years, and
+Teact's interfaces needed updating.  And the advantages of Mithril over React (patent issues included) pointed to a better direction for evolution.
 
 Halvalla is intended to allow a teacup syntax html scripting notation to run unchanged in any of three back-end rendering engines:  React and Mithril virtual DOMs and HTML text.
 
@@ -18,6 +18,38 @@ The following syntax is supported.Your mileage may vary.
 Build React or Mithril element trees by composing functions.  
 You get full javascript control flow, and minimal boilerplate.
 It's also quite simple (not really), just a thin (as possible) wrapper around [React.createElement](https://facebook.github.io/react/docs/top-level-api.html#react.createelement) or Mithril's `m`
+## Theory of operation
+
+Halvalla uses an Oracle object to indicate what works in a given environment.  For example, this is from the source for 'halvalla-mithril':
+
+```coffee
+#
+Mithril=require 'mithril'
+#
+# Halvalla.render defaults to HTML via internal teacup rendering engine
+# which is smart enough to recognize mithril's quirks
+# use Halvalla.render to get server-side, Mithril.render to get client side.
+Oracle =
+    summoner: Mithril  #the Greater Power
+    name: 'Mithril'    # his name
+    createElement: Mithril    #he creates without hassle, but requires us to
+    preInstantiate: true      # instantiate the whole virtual DOM before rendering
+                              # React allows lazy instatiation when rendering
+    getProp: (element)->element.attrs  # where does mithril stash this info?
+    getName: (element)->element.tag
+    trust: (text)-> Mithril.trust text # how to specify unescaped text
+
+#require the Halvalla engine, but throw away it's default Oracle's tags
+{Halvalla} = require '../src/halvalla.coffee'
+# create a new Halvalla with new overrides
+#export identically to the original Halvalla
+module.exports= (new Halvalla Oracle).tags()
+module.exports.Halvalla =Halvalla
+#
+```
+
+Currently, only the external aspects of Valhalla are in place:  Valhalla will get you to Mithril or React with your exact same source code, but the lifecycle methods
+and class structures of React and Mithril do not get the same universal treatment... ##Yet##
 
 ## Usage
 There are three ways to import Halvalla
@@ -154,10 +186,18 @@ H.bless class Widget extends H.Component
 [Teacup](http://github.com/goodeggs/teacup) which begat
 [Teact](http://github.com/hurrymaplelad/teact) which evolved into _Halvalla_
 
-## Contributing
+## Installation
 
 ```sh
 $ git clone https://github.com/jahbini/halvala && cd halvalla
 $ npm install
 $ npm test
 ```
+
+# ToDo and Assistance Requests
+
+1. finish mithril tests
+2. enhance readability
+3. add adaptors for lifecycle methods
+4. extend the ability of Halvalla to reduce porting efforts of useful third party
+components for Mithril and React.
