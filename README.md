@@ -1,22 +1,31 @@
-# Teact
+# Halvalla
+
+## The land where HTML deamons are conjured, instantiated and summoned into Three Domains
+
+Valhalla began as an attempt to use Teact to create a react based application without using pointy brackets or back-ticks.  Rude things that bite the syntax and uglify the landscape.
+
+Halvalla is intended to allow a teacup syntax html scripting notation to run unchanged in any of three back-end rendering engines:  React and Mithril virtual DOMs and HTML text. 
+i
+It started out as teact, but halvalla put back in the missing sweetness of the teacup rendering engine.
+
+The following syntax is supported.  Your mileage may vary.
+
+# It used to be Teact
 
 It's [better than cjsx](#how-is-this-better-than-cjsx).
 
-Build React element trees by composing functions.  
+Build React or Mithril element trees by composing functions.  
 You get full javascript control flow, and minimal boilerplate.
-It's also quite simple, just a thin wrapper around [React.createElement](https://facebook.github.io/react/docs/top-level-api.html#react.createelement) like JSX, making it [fast](#performance) and lightweight (2KB gzipped).
-
-[![Build Status](http://img.shields.io/travis/hurrymaplelad/teact.svg?style=flat-square)](https://travis-ci.org/hurrymaplelad/teact)
-[![NPM version](http://img.shields.io/npm/v/teact.svg?style=flat-square)](https://www.npmjs.org/package/teact)
+It's also quite simple (not really), just a thin (as possible) wrapper around [React.createElement](https://facebook.github.io/react/docs/top-level-api.html#react.createelement) or Mithril
 
 ## Usage
 ```coffee
-{crel} = require 'teact'
+{tag} = require 'halvalla-react'
 
-crel 'div', '#root.container', ->
+tag 'div', '#root.container', ->
   unless props.signedIn
-    crel 'button', onClick: handleOnClick, 'Sign In'
-  crel.text 'Welcome!'
+    tag 'button', onClick: handleOnClick, 'Sign In'
+  tag.text 'Welcome!'
 ```
 
 Transforms into:
@@ -34,21 +43,20 @@ React.createElement('div',
 
 Use it from your component's render method:
 ```coffee
-{Component} = require 'react'
-{crel} = require 'teact'
+{div,Component} = require 'halvalla-mithril'
 
 class Widget extends Component
   render: ->
-    crel 'div', className: 'foo', =>
-      crel 'div', 'bar'
+    div className: 'foo', =>
+      div, 'bar'
 ```
 
 Or in a [stateless component](https://facebook.github.io/react/docs/reusable-components.html#stateless-functions):
 
 ```coffee
 module.exports = (props) ->
-  crel 'div', className: 'foo', ->
-    crel 'div', props.bar
+  tag 'div', className: 'foo', ->
+    tag 'div', props.bar
 ```
 
 ### Nesting Components
