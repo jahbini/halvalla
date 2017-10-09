@@ -76,7 +76,7 @@
   "homepage": "http://github.com/jahbini/halvalla",
   "keywords": [
     "react",
-    "cjsx",
+    "mithril",
     "coffeescript",
     "coffee-script",
     "teacup",
@@ -85,10 +85,7 @@
     "render",
     "view",
     "html",
-    "coffeekup",
     "coffeecup",
-    "drykup",
-    "express"
   ],
   "license": "MIT",
   "main": "lib/halvalla",
@@ -98,7 +95,6 @@
     "mithril": "^1.1.4",
     "react": "15.4.1"
   },
-  "readme": "# Teact\n\nIt's [better than cjsx](#how-is-this-better-than-cjsx).\n\nBuild React element trees by composing functions.  \nYou get full javascript control flow, and minimal boilerplate.\nIt's also quite simple, just a thin wrapper around [React.createElement](https://facebook.github.io/react/docs/top-level-api.html#react.createelement) like JSX, making it [fast](#performance) and lightweight (2KB gzipped).\n\n[![Build Status](http://img.shields.io/travis/hurrymaplelad/teact.svg?style=flat-square)](https://travis-ci.org/hurrymaplelad/teact)\n[![NPM version](http://img.shields.io/npm/v/teact.svg?style=flat-square)](https://www.npmjs.org/package/halvalla)\n\n## Usage\n```coffee\n{crel} = require 'halvalla'\n\ncrel 'div', '#root.container', ->\n  unless props.signedIn\n    crel 'button', onClick: handleOnClick, 'Sign In'\n  crel.text 'Welcome!'\n```\n\nTransforms into:\n\n```coffee\nReact.createElement('div',\n  {id: root, className: 'container'}, [\n    (props.signedIn ? React.createElement('button',\n      {onClick: handleOnClick}, 'Sign In'\n    ) : null)\n    'Welcome!'\n  ]\n)\n```\n\nUse it from your component's render method:\n```coffee\n{Component} = require 'react'\n{crel} = require 'halvalla'\n\nclass Widget extends Component\n  render: ->\n    crel 'div', className: 'foo', =>\n      crel 'div', 'bar'\n```\n\nOr in a [stateless component](https://facebook.github.io/react/docs/reusable-components.html#stateless-functions):\n\n```coffee\nmodule.exports = (props) ->\n  crel 'div', className: 'foo', ->\n    crel 'div', props.bar\n```\n\n### Nesting Components\n\n`crel` is just a thin wrapper around [React.createElement](https://facebook.github.io/react/docs/top-level-api.html#react.createelement),\nso you can pass it components instead of crel names:\n\n```coffee\nclass DooDad extends Component\n  render: ->\n    crel 'div', className: 'doodad', =>\n      crel 'span', @props.children\n\nclass Widget extends Component\n  handleFiddle: =>\n    # ...\n\n  render: ->\n    crel 'div', className: 'foo', =>\n      crel DooDad, onFiddled: @handleFiddle, =>\n        crel 'div', \"I'm passed to DooDad.props.children\"\n\n```\n\nIf you need to build up a tree of elements inside a component's render method, you can\nescape the element stack via the `pureComponent` helper:\n\n```coffee\n{crel, pureComponent} = require 'halvalla'\n\nTeas = pureComponent (teas) ->\n  teas.map (tea) ->\n    # Without pureComponent, this would add teas to the element tree\n    # in iteration order.  With pureComponent, we just return the reversed list\n    # of divs without adding the element tree.  The caller may choose to add\n    # the returned list.\n    crel 'div', tea\n  .reverse()\n\nclass Widget extends Component\n  render: ->\n    crel 'div', Teas(@props.teas)\n```\n\n### Sugar Syntax\nTeact exports bound functions for elements, giving you options for\nterser syntax if you're into that:\n\n```coffee\nT = require 'halvalla'\n\nT.div className: 'foo', ->\n  T.text 'Blah!'\n```\n\nor the Teacup / CoffeeCup signatures:\n\n```coffee\n{div, text} = require 'halvalla'\n\ndiv '.foo', ->\n  text 'Blah!'\n```\n\n## Performance\n\nA [super-basic performance test](test/benchmarks/index.coffee) suggests that halvalla has no discernible impact on React rendering performance:\n\n```sh\n$ npm run benchmark\n\n> native x 5,197 ops/sec ±3.30% (76 runs sampled)\n> halvalla x 5,339 ops/sec ±2.23% (82 runs sampled)\n> Fastest is halvalla,native\n```\n\nIt's also lightweight, at 5KB minified, 2KB gzipped.  \n\n## How is this better than CJSX?\n\n- Familiar control flow with branching and loops.  See examples above.\n- No transpiler to [maintain](https://github.com/jsdf/coffee-react/issues/28).\n- No [extraneous enclosing tags](https://babeljs.io/repl/#?experimental=false&evaluate=true&loose=false&spec=false&code=%3Cdiv%3E%3C%2Fdiv%3E%0A%3Cdiv%3E%3C%2Fdiv%3E) required:\n\n  ```coffee\n  renderHeader: ->\n    unless @props.signedIn\n      crel 'a', href: '...', 'Sign in'\n    crel 'h1', 'Tea Shop'\n  ```\n\n  Just works.\n- [Nice syntax errors](https://github.com/jsdf/coffee-react/issues/32).\n- Half the lines of code. Those closing tags really add up.\n\nOther folks have [reached similar conclusions](https://slack-files.com/T024L9M0Y-F02HP4JM3-80d714).  They were later [bit by using the React API directly](https://github.com/planningcenter/react-patterns#jsx) when the implementation changed.  A thin wrapper like Teact should minimize this risk.\n\n## Legacy\n\n[Markaby](http://github.com/markaby/markaby) begat [CoffeeKup](http://github.com/mauricemach/coffeekup) begat\n[CoffeeCup](http://github.com/gradus/coffeecup) and [DryKup](http://github.com/mark-hahn/drykup) which begat\n[Teacup](http://github.com/goodeggs/teacup) which begat **Teact**.\n\n## Contributing\n\n```sh\n$ git clone https://github.com/jahbini/halvalla && cd halvalla\n$ npm install\n$ npm test\n```\n",
   "readmeFilename": "README.md",
   "repository": {
     "type": "git",
@@ -111,7 +107,7 @@
     "pretest": "npm run compile",
     "test-mithril": "rm test; ln -s test-mithril test; mocha; rm test ",
     "test-react": "rm test; ln -s test-react test; mocha; rm test",
-    "test-teacup": "rm test; ln -s test-teacup test; mocha; rm test", 
+    "test-teacup": "rm test; ln -s test-teacup test; mocha; rm test",
     "test": "npm run test-mithril; npm run test-react; npm run test-teacup"
   },
   "version": "0.9.1"
