@@ -49,7 +49,7 @@ module.exports.Halvalla =Halvalla
 ```
 
 Currently, only the external aspects of Valhalla are in place:  Valhalla will get you to Mithril or React with your exact same source code, but the lifecycle methods
-and class structures of React and Mithril do not get the same universal treatment... ##Yet##
+and class structures of React and Mithril do not get the same universal treatment...  **Yet**
 
 ## Usage
 There are three ways to import Halvalla
@@ -58,9 +58,9 @@ There are three ways to import Halvalla
 {tag,...} = require 'halvalla-react'
 ```
 
-2. set up the environment render to HTML directly with Teacup
+2. set up the environment render to HTML directly with internal rendering
 ```
-{tag,...} = require 'halvalla-teacup'
+{tag,...} = require 'halvalla'
 ```
 3. set up the environment for Mithril
 ```
@@ -69,7 +69,7 @@ There are three ways to import Halvalla
 ```
 
 ### Sugar Syntax
-Teact exports bound functions for elements, giving you options for
+Halvalla exports bound functions for elements, giving you options for
 terser syntax if you're into that:
 
 ```coffee
