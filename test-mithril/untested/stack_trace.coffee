@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{renderable, div, p} = require '../src/chalice'
+{renderable, div, p} = require '../src/chalice-mithril'
 
 describe 'stack trace', ->
   it 'should contain tag names', ->

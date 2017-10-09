@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{component, div, render, img, text, button} = require '../src/chalice'
+{component, div, render, img, text, button} = require '../src/chalice-mithril'
 
 describe 'Component', ->
 

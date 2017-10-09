@@ -44,7 +44,7 @@ normalizeArray= (b)->
   # look uniform as an array for subsequent iteration
   # 123 turns into [123], [bob,null,sue] turns into [bob,sue]
   # nullish input turns into []
-  c=if b?.length then b else [b]
+  c=if Array.isArray b then b else [b]
   return c if c.normalized?
   d = (v for v in c when v)
   Object.defineProperty d,'normalized',{value:true,enumerable: false}

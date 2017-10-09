@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{render, div, p} = require '../src/chalice'
+{render, div, p} = require '../src/chalice-mithril'
 
 describe 'nesting templates', ->
   it 'renders nested template in the same output', ->

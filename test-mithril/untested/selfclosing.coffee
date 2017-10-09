@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{renderable, img, br, link} = require '../src/chalice'
+{renderable, img, br, link} = require '../src/chalice-mithril'
 
 describe 'Self Closing Tags', ->
   describe '<img />', ->

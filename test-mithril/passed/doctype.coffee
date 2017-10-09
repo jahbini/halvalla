@@ -1,5 +1,6 @@
 expect = require 'expect.js'
-{render, doctype} = require '../src/chalice'
+debugger
+{render, doctype} = require '../src/chalice-mithril'
 
 describe 'doctype', ->
   it 'default should render html5 doctype', ->

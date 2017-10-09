@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{render, div, img} = require '../src/chalice'
+{render, div, img} = require '../src/chalice-mithril'
 
 describe 'CSS Selectors', ->
   describe 'id selector', ->

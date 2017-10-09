@@ -22,7 +22,7 @@ Examples of oracle -- the default is to do Teacup to HTML
 
 ###
 #teact = require '../src/teact.coffee'
-{doctypes,elements,mergeElements,allTags,escape,quote} = require '../src/html-tags'
+{doctypes,elements,normalizeArray,mergeElements,allTags,escape,quote} = require '../src/html-tags'
 teacup = require '../src/teacup.coffee'
 #if we are using React as the master, it supplies a class, otherwise an empty class with an empty view
 propertyName = 'props'
@@ -65,10 +65,12 @@ class Chalice
     propertyName = oracle.propertyName
   escape:escape
   quote:quote
+
   resetStack: (stack=null) ->
     previous = @stack
     @stack = stack
     return previous
+
   pureComponent: (contents) ->
     return ->
       previous = @.resetStack null
@@ -87,7 +89,10 @@ class Chalice
   raw: (text)->
     unless text.toString
       throw new Error "raw allows text only: expected a string"
-    el = oracle.createElement 'text',dangerouslySetInnerHTML: __html: text.toString()
+    if oracle.trust
+      el = oracle.trust text
+    else
+      el = oracle.createElement 'text', dangerouslySetInnerHTML: __html: text.toString()
     @stack?.push el
     return el
 
@@ -125,7 +130,7 @@ class Chalice
 
   crelVoid: (tagName, args...) =>
     {attrs, contents} = @normalizeArgs args
-    if contents
+    if contents.length > 0
       throw new Error "Element type is invalid: must not have content: #{tagName}"
     el = oracle.createElement tagName, attrs,null
     #debugger
@@ -171,7 +176,7 @@ class Chalice
   normalizeArgs: (args) ->
     attrs = {}
     selector = null
-    contents = null
+    contents = []
     for arg, index in args when arg?
       switch typeof arg
         when 'string'
@@ -179,9 +184,18 @@ class Chalice
             selector = arg
             parsedSelector = @parseSelector(arg)
           else
-            contents = arg
-        when 'function', 'number', 'boolean'
-          contents = arg
+            contents.push arg
+        when 'number', 'boolean'
+          contents.push arg
+        when 'function'
+          #debugger
+          if oracle.preInstantiate
+            stuff = @instantiator arg
+            stuff = normalizeArray stuff
+            for x in stuff
+              contents.push x
+          else
+            contents.push arg
         when 'object'
           if arg.constructor == Object
             attrs = arg
@@ -191,10 +205,11 @@ class Chalice
               (clone, key) -> clone[key] = arg[key]; clone
               {}
             )
-          else
-            contents = arg
+          else if arg.length?
+            for a in arg
+              contents.push a if a
         else
-          contents = arg
+          contents.push = arg
 
     if parsedSelector?
       {id, classes} = parsedSelector
@@ -213,7 +228,7 @@ class Chalice
       delete attrs.data
       for k, v of dataAttrs
         attrs["data-#{k}"] = v
-
+    contents = normalizeArray contents
     return {attrs, contents, selector}
 
   #

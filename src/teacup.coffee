@@ -17,6 +17,7 @@ module.exports = Teacup = class Teacup
 
   march: (component)->
       return '' unless (value=component?.toString())
+      #console.log "March",component
       switch typeof component
         when 'function' then @march @instantiator component
         when 'string','number' then @raw component.toString()
@@ -97,6 +98,7 @@ module.exports = Teacup = class Teacup
 
   attrOrder: ['id', 'class']
   renderAttrs: (obj) ->
+    return '' unless obj
     result = ''
 
     # render explicitly ordered attributes first
@@ -119,17 +121,24 @@ module.exports = Teacup = class Teacup
     else
       @textOnly contents
 
-
   tag: (cell) ->
     {children} = cell
+    #console.log "CELL!",cell
+    debugger
     props=@oracle.getProp cell
     tagName=@oracle.getName cell
     @raw "<#{tagName}#{@renderAttrs props}>" unless tagName == 'text'
-    if props.dangerouslySetInnerHTML
+    if cell.text
+      @textOnly cell.text
+    if props?.dangerouslySetInnerHTML
       @raw props.dangerouslySetInnerHTML.__html
     else
       @march children
     @raw "</#{tagName}>" unless tagName == 'text'
+
+  rawMithril:(cell)->
+    @raw cell.children
+    return
 
   rawTag: (cell) ->
     {children} = cell
@@ -146,7 +155,6 @@ module.exports = Teacup = class Teacup
     @raw "<#{tagName}#{@renderAttrs props}>"
     @renderContents children
     @raw "</#{tagName}>"
-
 
   selfClosingTag: (cell) ->
     {children} = cell
@@ -194,6 +202,7 @@ module.exports = Teacup = class Teacup
 for tagName in mergeElements 'regular', 'obsolete'
   do (tagName) ->
     Teacup::[tagName] = (args...) -> @tag args...
+Teacup::['<'] = (args...) -> @rawMithril args...
 
 for tagName in mergeElements 'raw'
   do (tagName) ->

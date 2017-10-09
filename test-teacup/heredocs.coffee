@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{render, script} = require '../src/chalice'
+{render, script} = require '../src/chalice-mithril'
 
 describe 'HereDocs', ->
   it 'preserves line breaks', ->

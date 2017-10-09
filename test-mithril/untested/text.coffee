@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{render, renderable, text, h1} = require '../src/chalice'
+{render, renderable, text, h1} = require '../src/chalice-mithril'
 
 describe 'text', ->
   it 'renders text verbatim', ->

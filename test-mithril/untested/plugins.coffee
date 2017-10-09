@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-teacup = require '../src/chalice'
+teacup = require '../src/chalice-mithril'
 
 describe 'plugins', ->
   it 'are applied via use', ->

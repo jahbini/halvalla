@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{renderable, div, span} = require '../src/chalice'
+{renderable, div, span} = require '../src/chalice-mithril'
 
 describe 'renderable decorator', ->
   it 'makes a template directly callable', ->

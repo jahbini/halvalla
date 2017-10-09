@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{render, ie, link} = require '../src/chalice'
+{render, ie, link} = require '../src/chalice-mithril'
 
 describe 'IE conditionals', ->
   it 'renders conditional comments', ->

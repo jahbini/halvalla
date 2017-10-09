@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{render, comment} = require '../src/chalice'
+{render, comment} = require '../src/chalice-mithril'
 
 describe 'Comments', ->
   it 'renders HTML <!--comments-->', ->

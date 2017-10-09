@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{renderable, p, div, script} = require '../src/chalice'
+{renderable, p, div, script} = require '../src/chalice-mithril'
 
 describe 'tag', ->
   it 'renders Dates', ->
