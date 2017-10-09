@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{render, doctype} = require '../src/chalice-mithril'
+{render, doctype} = require '../src/halvalla-mithril'
 
 describe 'doctype', ->
   it 'default should render html5 doctype', ->

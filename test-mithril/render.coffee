@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{render, raw, cede, div, p, strong, a} = require '../src/chalice-mithril'
+{render, raw, cede, div, p, strong, a} = require '../src/halvalla-mithril'
 
 describe 'render', ->
   describe 'nested in a template', ->

@@ -1,6 +1,6 @@
 expect = require 'expect.js'
-chalice = require '../src/chalice-react'
+halvalla = require '../src/halvalla-react'
 
 describe 'plugins', ->
   it 'are applied via use', ->
-    expect(chalice.use).to.be.a 'function'
+    expect(halvalla.use).to.be.a 'function'

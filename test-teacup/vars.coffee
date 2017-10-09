@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{render, h1} = require '../src/chalice-mithril'
+{render, h1} = require '../src/halvalla-mithril'
 
 describe 'Context data', ->
   it 'is an argument to the template function', ->

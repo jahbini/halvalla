@@ -1,5 +1,5 @@
 ###
-# Chalice -- bindings for element creation and expression via teact and teacup
+# Halvalla -- bindings for element creation and expression via teact and teacup
 ###
 
 ###
@@ -57,7 +57,7 @@ GreatEmptiness = class GreatEmptiness
 #
 
 #
-class Chalice
+class Halvalla
   oracle=null
   constructor: (Oracle=null)->
     @stack = null
@@ -112,12 +112,12 @@ class Chalice
       el = oracle.createElement tagName, attrs, children...
     else
       el = oracle.createElement tagName, attrs, children
-    allTags[tagName]= Chalice::[tagName] = el
+    allTags[tagName]= Halvalla::[tagName] = el
 
   bless: (component,itsName=null)->
     component = component.default if component.__esModule && component.default
     name = itsName || component.name
-    allTags[name]= Chalice::[name] = (args...) => @crel component, args...
+    allTags[name]= Halvalla::[name] = (args...) => @crel component, args...
 
   component: (func) ->
     (args...) =>
@@ -266,33 +266,33 @@ class Chalice
       do (method) =>
         allTags[method]= bound[method] = (args...) =>
           if !@[method]
-            throw "no method named #{method} in Chalice"
+            throw "no method named #{method} in Halvalla"
           @[method].apply @, args
 
 
     # Define tag functions on the prototype for pretty stack traces
     for tagName in mergeElements 'regular', 'obsolete'
       do (tagName) ->
-        allTags[tagName]= Chalice::[tagName] = (args...) -> @crel tagName, args...
+        allTags[tagName]= Halvalla::[tagName] = (args...) -> @crel tagName, args...
 
     for tagName in mergeElements 'raw'
       do (tagName) ->
-        allTags[tagName]= Chalice::[tagName] = (args...) -> @crel tagName, args...
+        allTags[tagName]= Halvalla::[tagName] = (args...) -> @crel tagName, args...
 
     for tagName in mergeElements 'script','coffeescript','comment'
       do (tagName) ->
-        allTags[tagName]= Chalice::[tagName] = (args...) -> @crel tagName, args...
+        allTags[tagName]= Halvalla::[tagName] = (args...) -> @crel tagName, args...
 
-    #allTags['ie']= Chalice::['ie'] = (args...) -> @ie args...
+    #allTags['ie']= Halvalla::['ie'] = (args...) -> @ie args...
 
     for tagName in mergeElements 'void', 'obsolete_void'
       do (tagName) ->
-        allTags[tagName]= Chalice::[tagName] = (args...) -> @crelVoid tagName, args...
+        allTags[tagName]= Halvalla::[tagName] = (args...) -> @crelVoid tagName, args...
     return bound
 
 if module?.exports
-  module.exports = new Chalice().tags()
-  module.exports.Chalice = Chalice
+  module.exports = new Halvalla().tags()
+  module.exports.Halvalla = Halvalla
 else
-  window.Chalice = new Chalice().tags()
-  window.Chalice.Chalice = Chalice
+  window.Halvalla = new Halvalla().tags()
+  window.Halvalla.Halvalla = Halvalla

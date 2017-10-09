@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{tag, p, div, script,render} = require '../src/chalice-react'
+{tag, p, div, script,render} = require '../src/halvalla-react'
 
 describe 'render', ->
   it 'renders text verbatim', ->

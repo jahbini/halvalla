@@ -11,7 +11,7 @@ Oracle =
     conjurer: ReactDom.renderToString
     getProp: (element)->element.props
     getName: (element)->element.tagName
-{Chalice} = require '../src/chalice.coffee'
-C=new Chalice Oracle
+{Halvalla} = require '../src/halvalla.coffee'
+C=new Halvalla Oracle
 module.exports= C.tags()
-module.exports.Chalice =Chalice
+module.exports.Halvalla =Halvalla

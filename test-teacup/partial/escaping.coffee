@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{render, raw, script, escape, h1, input} = require '../src/chalice-mithril'
+{render, raw, script, escape, h1, input} = require '../src/halvalla-mithril'
 
 describe 'Auto escaping', ->
   describe 'a script tag', ->

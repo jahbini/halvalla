@@ -11,8 +11,8 @@ Oracle =
     getProp: (element)->element.attrs
     getName: (element)->element.tag
     trust: (text)-> Mithril.trust text
-debugger    
-{Chalice} = require '../src/chalice.coffee'
-C=new Chalice Oracle
+debugger
+{Halvalla} = require '../src/halvalla.coffee'
+C=new Halvalla Oracle
 module.exports= C.tags()
-module.exports.Chalice =Chalice
+module.exports.Halvalla =Halvalla

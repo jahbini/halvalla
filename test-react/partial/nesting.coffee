@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{render,div, span, p, pureComponent} = require '../src/chalice-react'
+{render,div, span, p, pureComponent} = require '../src/halvalla-react'
 #{render} = require './helpers'
 
 describe 'nesting templates', ->

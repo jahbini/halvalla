@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{render, tag, input, normalizeArgs} = require '../src/chalice-mithril'
+{render, tag, input, normalizeArgs} = require '../src/halvalla-mithril'
 
 describe 'custom tag', ->
   it 'should render', ->

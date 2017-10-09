@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{tag, p, div,text, script, span,render,bless,oracle} = require '../src/chalice-react'
+{tag, p, div,text, script, span,render,bless,oracle} = require '../src/halvalla-react'
 
 Component = oracle().Component
 

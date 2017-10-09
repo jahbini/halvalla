@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-teacup = require '../src/chalice-mithril'
+teacup = require '../src/halvalla-mithril'
 return #JAH
 connectAssets = require '../lib/connect-assets'
 

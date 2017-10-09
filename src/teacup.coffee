@@ -161,7 +161,7 @@ module.exports = Teacup = class Teacup
     props=@oracle.getProp cell
     tagName=@oracle.getName cell
     if (normalizeArray children).length != 0
-      throw new Error "Chalice: <#{tagName}/> must not have content.  Attempted to nest #{children}"
+      throw new Error "Halvalla: <#{tagName}/> must not have content.  Attempted to nest #{children}"
     @raw "<#{tagName}#{@renderAttrs props} />"
 
   coffeescriptTag: (cell) ->
@@ -187,7 +187,7 @@ module.exports = Teacup = class Teacup
 
   textOnly: (s) ->
     unless @htmlOut?
-      throw new Error("Chalice: can't call a tag function outside a rendering context")
+      throw new Error("Halvalla: can't call a tag function outside a rendering context")
     @htmlOut += s? and escape(s.toString()) or ''
     #console.log "text appends ",s? and escape(s.toString()) or ''
     null
