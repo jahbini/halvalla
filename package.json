@@ -85,7 +85,7 @@
     "render",
     "view",
     "html",
-    "coffeecup",
+    "coffeecup"
   ],
   "license": "MIT",
   "main": "lib/halvalla",
