@@ -7,12 +7,13 @@ describe 'Attributes', ->
     it 'renders the corresponding HTML attributes', ->
       template = ->
           a href: '/', title: 'Home'
+      debugger
       expect(render template).to.equal '<a href="/" title="Home"></a>'
 
   describe 'data attribute', ->
     it 'expands attributes', ->
       template = -> br data: { name: 'Name', value: 'Value' }
-      expect(render template).to.equal '<br data-name="Name" data-value="Value" />'
+      expect(render template).to.equal '<br data-name="Name" data-value="Value"/>'
 
   describe 'nested hyphenated attribute', ->
     it 'renders', ->

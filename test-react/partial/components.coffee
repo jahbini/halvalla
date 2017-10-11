@@ -1,9 +1,7 @@
 expect = require 'expect.js'
-{tag,Component, p, div,text, script, span,render,bless} = require '../src/halvalla-react'
-re=require 'react'
+{tag, Component,p, div,text, script, span,render,bless,oracle} = require '../src/halvalla-react'
 
-
-dooDad = bless class DooDad extends re.Component
+dooDad = bless class DooDad extends Component
   render: ->
     console.log "PROPerties",@props
     props = @props
@@ -11,7 +9,7 @@ dooDad = bless class DooDad extends re.Component
       text props.label
       span props.children
 
-widget = bless class Widget extends re.Component
+widget = bless class Widget extends Component
   render: ->
     console.log "PROPerties",@props
     div className: 'foo', ->

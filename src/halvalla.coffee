@@ -41,6 +41,7 @@ GreatEmptiness = class GreatEmptiness
       isValidElement: (c)->c.view?
       name: 'great-emptiness'
       Component: dummyComponent
+      Element: dummyComponent
       createElement: (args...)-> new dummyComponent args...
       summoner: null
       getProp: (element)->element.attrs
@@ -50,7 +51,7 @@ GreatEmptiness = class GreatEmptiness
     for key,value of Object.assign defaultObject, Oracle
       GreatEmptiness::[key] = value
     @teacup=new teacup instantiator,defaultObject
-    @conjurer= @teacup.render.bind @teacup
+    @conjurer= @teacup.render.bind @teacup unless @conjurer
     @
 #
 # global Oracle
@@ -99,7 +100,6 @@ class Halvalla
   doctype: (type=5) ->
     @raw doctypes[type]
 
-  oracle: ()-> oracle
   ie: (condition,contents)=>
     @crel 'ie',condition:condition,contents
 
@@ -108,16 +108,15 @@ class Halvalla
       throw new Error "HTML tag type is invalid: expected a string but got #{typeof tagName?}"
     {attrs, contents} = @normalizeArgs args
     children = contents
-    if children?.splice
-      el = oracle.createElement tagName, attrs, children...
-    else
-      el = oracle.createElement tagName, attrs, children
+    el = oracle.createElement tagName, attrs, children
     allTags[tagName]= Halvalla::[tagName] = el
 
   bless: (component,itsName=null)->
+    debugger
     component = component.default if component.__esModule && component.default
     name = itsName || component.name
-    allTags[name]= Halvalla::[name] = (args...) => @crel component, args...
+    name = name[0].toLowerCase()+name.slice 1
+    allTags[name]= Halvalla::[name] = (args...) => @crel name,component, args...
 
   component: (func) ->
     (args...) =>
@@ -143,6 +142,7 @@ class Halvalla
       throw new Error "Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: #{tagName}"
     {attrs, contents} = @normalizeArgs args
     children = contents
+    tagName = @tagName attrs,children if tagName.apply && oracle.instantiateChildFunction
     if children?.splice
       el = oracle.createElement tagName, attrs, children...
     else
@@ -248,6 +248,7 @@ class Halvalla
   render: (node,rest...)->
     previous = @.resetStack null
     try
+      debugger
       structure = node rest...
     catch
       debugger
@@ -258,8 +259,10 @@ class Halvalla
   #
   tags: ->
     bound = {}
+    bound.Oracle = oracle
+    bound.Component = dummyComponent
     boundMethodNames = [].concat(
-      'bless cede component doctype escape ie normalizeArgs pureComponent oracle raw render renderable tag text use'.split(' ')
+      'bless cede component doctype escape ie normalizeArgs pureComponent raw render renderable tag text use'.split(' ')
       mergeElements 'regular', 'obsolete', 'raw', 'void', 'obsolete_void', 'script','coffeescript','comment'
     )
     for method in boundMethodNames
