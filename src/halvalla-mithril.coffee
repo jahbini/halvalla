@@ -9,7 +9,6 @@ Oracle =
     name: 'Mithril'    # his name
     createElement: Mithril    #he creates without hassle, but requires us to
     preInstantiate: true      # instantiate the whole virtual DOM before rendering
-    instantiateChildFunction: false # React don't like functions. Halvalla will cope
 
     getProp: (element)->element.attrs  # where does mithril stash this info?
     getName: (element)->element.tag

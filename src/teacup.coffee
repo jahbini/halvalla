@@ -42,13 +42,14 @@ module.exports = Teacup = class Teacup
                 Teacup::[tagName]= (component, args...) -> @tag component,args...
               @march node
             else
-              #node has been istantiated
+              #node has been instantiated
               unless Teacup::[tagName]  #generate alias for stack dumps
                 Teacup::[tagName]= (component, args...) -> @tag component,args...
               #render the node and append it to the htmlOout string
               @[tagName] component
-          catch
+          catch badDog
             debugger
+            throw badDog
         else
           debugger
           @textOnly "bad component?"
@@ -56,10 +57,10 @@ module.exports = Teacup = class Teacup
           return
       return
 
-  render: (component) ->
+  render: (component,args...) ->
     previous = @resetBuffer('')
     try
-      @march component
+      @march component, args...
     finally
       result = @resetBuffer previous
     return result

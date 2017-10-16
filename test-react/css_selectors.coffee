@@ -35,4 +35,5 @@ describe 'CSS Selectors', ->
   describe 'without contents', ->
     it 'still adds attributes', ->
       template = -> img '#myid.myclass', src: '/pic.png'
-      expect(render template).to.equal '<img id="myid" class="myclass" src="/pic.png" />'
+      # the order of src, id and myclass may change from react version to...
+      expect(render template).to.contain '<img src="/pic.png" id="myid" class="myclass"/>'

@@ -4,7 +4,8 @@ expect = require 'expect.js'
 
 describe 'Context data', ->
   it 'is an argument to the template function', ->
-    template = ({foo}) -> h1 foo
+    template = ({foo}) ->
+      h1 foo
     expect(render template, foo: 'bar').to.equal '<h1>bar</h1>'
 
 describe 'Local vars', ->

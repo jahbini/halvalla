@@ -1,17 +1,16 @@
 #
 React=require 'react'
 ReactDom = require 'react-dom/server'
-debugger
 Oracle =
     summoner: React
     name: 'React'
     isValidElement: React.isValidElement
     Component: React.Component
+    Element: {}
     createElement: React.createElement
     createComponent: React.createComponent
     conjurer: ReactDom.renderToStaticMarkup
-    preInstantiate: true
-    instantiateChildFunction: true # React don't like functions. Halvalla will cope
+    preInstantiate: false
     getProp: (element)->element.props
     propertyName: 'props'
     getName: (element)->element.tagName || element.type
