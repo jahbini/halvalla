@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{render, div, img} = require '../src/halvalla-mithril'
+{render, div, img} = require '../src/halvalla'
 
 describe 'CSS Selectors', ->
   describe 'id selector', ->

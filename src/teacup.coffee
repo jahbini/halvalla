@@ -17,7 +17,7 @@ module.exports = Teacup = class Teacup
 
   march: (component)->
       return '' unless (value=component?.toString())
-      #console.log "March",component
+      #console.log "March Teacup",component
       switch typeof component
         when 'function' then @march @instantiator component
         when 'string','number' then @raw component.toString()
@@ -125,7 +125,7 @@ module.exports = Teacup = class Teacup
   tag: (cell) ->
     {children} = cell
     #console.log "CELL!",cell
-    debugger
+    #debugger
     props=@oracle.getProp cell
     tagName=@oracle.getName cell
     @raw "<#{tagName}#{@renderAttrs props}>" unless tagName == 'text'

@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{renderable, div, span} = require '../src/halvalla-mithril'
+{renderable, div, span} = require '../src/halvalla'
 
 describe 'renderable decorator', ->
   it 'makes a template directly callable', ->

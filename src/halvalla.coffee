@@ -29,6 +29,7 @@ propertyName = 'props'
 GreatEmptiness = null
 dummyComponent = null
 dummyElement = null
+
 class Halvalla
   oracle=null
 #
@@ -39,12 +40,13 @@ class Halvalla
         defaultObject =
           isValidElement: (c)->c.view?
           name: 'great-emptiness'
-          Component: Oracle.Component || {}
-          Element: Oracle.Element || {}
+          Component: Oracle.Component || class Component
+          Element: Oracle.Element || class Element
           createElement: (args...)-> new dummyElement args...
           summoner: null
           getProp: (element)->element.attrs
-          getName: (element)->element.tag
+          getName: (element)->element._Halvalla?.tagName|| element.tag || element.type
+          propertyName: 'attrs'
           conjurer: null
         # decorate this singleton with
         for key,value of Object.assign defaultObject, Oracle
@@ -58,7 +60,7 @@ class Halvalla
     dummyComponent = class Component extends oracle.Component
       constructor:(args...)->
         super args...
-        @halvalla =
+        @_Halvalla =
           propertyName:propertyName
           #children:@[properties].children
           #tagname: tagName[0].toLowerCase()+tagName.slice 1
@@ -71,10 +73,10 @@ class Halvalla
         super tagName,properties,@children...
         @[propertyName]=properties
         @children = @children[0] if @children.length ==1
-        @halvalla =
-          tagname: tagName[0].toLowerCase()+tagName.slice 1
-          propertyName:properties
-          children:@[properties].children
+        @_Halvalla =
+          tagName: tagName[0].toLowerCase()+tagName.slice 1
+          propertyName:propertyName
+          children:@[propertyName].children
         @
       view: ->
 
@@ -91,8 +93,13 @@ class Halvalla
   escape:escape
 
   quote:quote
+  noDups:(newElement)->
+    return newElement unless stack=@.stack
+    stack.push newElement unless stack.length >0
+    stack.push newElement unless newElement == stack[stack.length-1]
+    return newElement
 
-  resetStack: (stack=null) ->
+  resetStack: (stack=null) =>
     #console.log "STACK",@stack
     previous = @stack
     @stack = stack
@@ -114,8 +121,7 @@ class Halvalla
       el = oracle.trust text
     else
       el = oracle.createElement 'text', dangerouslySetInnerHTML: __html: text.toString()
-    @stack?.push el
-    return el
+    return @noDups el
 
   doctype: (type=5) ->
     @raw doctypes[type]
@@ -148,11 +154,9 @@ class Halvalla
     if typeof contents is 'function'
       contents = contents.apply @, rest
     if typeof contents is 'number'
-      @stack.push contents
-      return
+      return @noDups contents
     if typeof contents is 'string'
-      @stack.push contents
-      return
+      return @noDups contents
     if contents.length >0
       @stack.push contents...
     return
@@ -170,10 +174,8 @@ class Halvalla
     {attrs, contents} = @normalizeArgs args
     if contents.length > 0
       throw new Error "Element type is invalid: must not have content: #{tagName}"
-    debugger
     el = oracle.createElement tagName, attrs,null
-    @stack?.push el
-    return el
+    return @noDups el
 
   crel: (tagName, args...) =>
     unless tagName?
@@ -188,13 +190,11 @@ class Halvalla
       el = oracle.createElement tagName, attrs, children...
     else
       el = oracle.createElement tagName, attrs, children
-    @stack?.push el
-    return el
+    return @noDups el
 
   text: (s) ->
     return s unless s?.toString
-    @stack?.push(s.toString())
-    return s.toString()
+    return @noDups s.toString()
 
   isSelector: (string) ->
     string.length > 1 and string.charAt(0) in ['#', '.']
@@ -212,6 +212,7 @@ class Halvalla
     return {id, classes}
 
   normalizeArgs: (args) ->
+    args = [args] if !args.length
     attrs = {}
     selector = null
     contents = null
@@ -241,6 +242,8 @@ class Halvalla
               (clone, key) -> clone[key] = arg[key]; clone
               {}
             )
+          if arg.toString?() != '[object Object]'
+            contents = arg.toString()
           else if arg.length?
             contents= arg
         else
@@ -295,8 +298,7 @@ class Halvalla
         @march result if l== @stack.length
         return null
       when 'string','number'
-        @stack.push component
-        return null
+        return @noDups component
       when (Array.isArray component) && 'object'
         @march c for c in component
       when (value != '[object Object]') && 'object'
@@ -327,8 +329,7 @@ class Halvalla
             #@march node
           else
             #node has been instantiated and may be pushed to the output stack
-            @stack.push component
-            return
+            return @noDups component
         catch badDog
           console.error badDog
           debugger
@@ -353,15 +354,15 @@ class Halvalla
       #throw new Error "Stack structure violation"
     @.resetStack()
     #console.log "Render Structure sent to oracle.conjurer",structure
-    structure = structure[0]
-    switch typeof structure
-      when 'string','number'
-        structure = @crel 'text','', structure
+    result = for element in structure
+      switch typeof element
+        when 'string','number'
+          element = @crel 'text','', element
 
-    #console.log "Render Structure sent to oracle.conjurer",structure
-    result = oracle.conjurer structure
+      #console.log "Render element sent to oracle.conjurer",element
+      oracle.conjurer element
     #console.log "And it ends with a caboom",result
-    return result
+    return result.join ''
   #
   # Binding
   #

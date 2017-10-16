@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{component, div, render, img, text, button} = require '../src/halvalla-mithril'
+{component, div, render, img, text, button} = require '../src/halvalla'
 
 describe 'Component', ->
 

@@ -1,9 +1,10 @@
 expect = require 'expect.js'
-{renderable, p, div, script} = require '../src/halvalla-mithril'
+{renderable, p, div, script} = require '../src/halvalla'
 
 describe 'tag', ->
   it 'renders Dates', ->
     date = new Date(2013,1,1)
+    debugger
     expect(renderable(p) date).to.equal "<p>#{date.toString()}</p>"
 
   it 'renders text verbatim', ->
@@ -11,6 +12,7 @@ describe 'tag', ->
 
   it 'renders numbers', ->
     expect(renderable(p) 1).to.equal '<p>1</p>'
+    debugger
     expect(renderable(p) 0).to.equal '<p>0</p>'
 
   it "renders undefined as ''", ->

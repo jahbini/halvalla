@@ -1,6 +1,6 @@
 expect = require 'expect.js'
 {renderable, doctype, html, head, meta, link, style, title, script, body,
-coffeescript, header, section, nav, footer, h1, h2, ul, li, a, p} = require '../src/halvalla-mithril'
+coffeescript, header, section, nav, footer, h1, h2, ul, li, a, p} = require '../src/halvalla'
 
 describe 'coffeekup.org example', ->
 
@@ -46,5 +46,4 @@ describe 'coffeekup.org example', ->
             p i for i in [1..max]
           footer ->
             p shoutify('bye')
-    debugger
     expect(template()).to.contain 'Just Stuff'

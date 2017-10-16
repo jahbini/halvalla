@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-teacup = require '../src/halvalla-mithril'
+teacup = require '../src/halvalla'
 {renderFile} = require '../lib/express'
 
 describe 'express', ->

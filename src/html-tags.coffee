@@ -46,7 +46,7 @@ normalizeArray= (b)->
   # nullish input turns into []
   c=if Array.isArray b then b else [b]
   return c if c.normalized?
-  d = (v for v in c when v)
+  d = (v for v in c when v != null && v!='')
   Object.defineProperty d,'normalized',{value:true,enumerable: false}
   return d
 

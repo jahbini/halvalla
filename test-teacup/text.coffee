@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{render, renderable, text, h1} = require '../src/halvalla-mithril'
+{render, renderable, text, h1} = require '../src/halvalla'
 
 describe 'text', ->
   it 'renders text verbatim', ->
