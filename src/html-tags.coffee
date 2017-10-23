@@ -50,6 +50,46 @@ normalizeArray= (b)->
   Object.defineProperty d,'normalized',{value:true,enumerable: false}
   return d
 
+BagMan = class BagMan
+  constructor: ()->
+    @lastShipment = null
+    @shipment = null
+    return
+    
+  context: (inputStuff...)->
+    #console.log inputStuff
+    @lastShipment = null
+    a=normalizeArray inputStuff...
+    @toDoList=a.reverse()
+    @shipment = []
+    return
+    
+  shipOut: (stuff)=>
+    return stuff unless @shipment
+    #console.log "shipping",stuff
+    return stuff if stuff == @lastShipment
+    @lastShipment = stuff
+    cleanStuff = normalizeArray stuff
+    for eachItem in cleanStuff
+      @shipment.push eachItem
+    return stuff
+    
+   inspect: ()=>
+     return @toDoList.pop()
+     
+   reinspect: (stuff)=>
+    #console.log "reinspect",stuff
+    newStuff = normalizeArray stuff
+    for eachItem in newStuff by -1
+      # force the caller to make primitive types into objects
+      # that way each item will have a constructor and a constructor name
+      throw new Error 'illegal input in instantiation bag #{eachItem}'  if 'object' != typeof eachItem
+      @toDoList.push eachItem
+    return stuff
+  harvest:()=>
+    #console.log "harvest",@shipment
+    return @shipment
+    
 # Create a unique list of element names merging the desired groups.
 mergeElements = (args...) ->
   result = []
@@ -78,3 +118,4 @@ module.exports=
   escape:escape
   quote:quote
   allTags:{}
+  BagMan: BagMan

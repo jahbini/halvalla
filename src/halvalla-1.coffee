@@ -21,33 +21,30 @@ Examples of oracle -- the default is to do Teacup to HTML
     Component: {}
 
 ###
-#teact = require '../lib/teact'
-{doctypes,elements,normalizeArray,mergeElements,allTags,escape,quote,BagMan} = require '../lib/html-tags'
-teacup = require '../lib/teacup'
+#teact = require '../src/teact.coffee'
+{doctypes,elements,normalizeArray,mergeElements,allTags,escape,quote} = require '../src/html-tags'
+teacup = require '../src/teacup.coffee'
 #if we are using React as the master, it supplies a class, otherwise an empty class with an empty view
 propertyName = 'props'
 GreatEmptiness = null
 dummyComponent = null
 dummyElement = null
-
 class Halvalla
   oracle=null
 #
   constructor: (Oracle=null)->
-    @bagMan = new BagMan
+    @stack = null
     GreatEmptiness = class GreatEmptiness
       constructor: (instantiator,Oracle={})->
         defaultObject =
           isValidElement: (c)->c.view?
           name: 'great-emptiness'
-          Component: Oracle.Component || class Component
-          Element: Oracle.Element || class Element
+          Component: Oracle.Component || {}
+          Element: Oracle.Element || {}
           createElement: (args...)-> new dummyElement args...
           summoner: null
-          getChildren: (element)->element.children
           getProp: (element)->element.attrs
-          getName: (element)->element._Halvalla?.tagName|| element.tag || element.type
-          propertyName: 'attrs'
+          getName: (element)->element.tag
           conjurer: null
         # decorate this singleton with
         for key,value of Object.assign defaultObject, Oracle
@@ -56,45 +53,36 @@ class Halvalla
         @conjurer= @teacup.render.bind @teacup unless @conjurer
         @
     #
-    oracle = new GreatEmptiness @crel,Oracle
+    oracle = new GreatEmptiness @instantiator,Oracle
     propertyName = oracle.propertyName
     dummyComponent = class Component extends oracle.Component
-      constructor:(tagName,properties,children...)->
-        super properties,children...
-        @tagName=tagName
-        @[propertyName] = properties unless @[propertyName]
-        @children =children unless @[propertyName].children
-        @_Halvalla =
+      constructor:(args...)->
+        super args...
+        @halvalla =
           propertyName:propertyName
           #children:@[properties].children
           #tagname: tagName[0].toLowerCase()+tagName.slice 1
-        return @
+        @
 
       render: ->
 
     dummyElement = class Element extends oracle.Component
       constructor:(tagName,properties={},@children...)->
-        super properties,@children...
-        @tagName=tagName
+        super tagName,properties,@children...
         @[propertyName]=properties
         @children = @children[0] if @children.length ==1
-        if typeof tagName == 'function'
-          name = tagName.name
-        else name = tagName
-        @_Halvalla =
-         
-          tagName: name[0].toLowerCase()+name.slice 1
-          propertyName:propertyName
-          children:@[propertyName].children
+        @halvalla =
+          tagname: tagName[0].toLowerCase()+tagName.slice 1
+          propertyName:properties
+          children:@[properties].children
         @
       view: ->
 
-  mutator: (tagName,destination,withThis=null)->
-    do (tagName)=>
-      Halvalla::[tagName] = (args...) -> destination.apply @, [tagName].concat args
-    thing= Halvalla::[tagName]
-    thing.Halvalla={tagName:tagName,boss:oracle.name}
-    allTags[tagName] = thing
+  mutator: (tagName,destination,withThis=null)=>
+    allTags[tagName]= Halvalla::[tagName] = do ->
+      (args...) -> destination tagName, args...
+    allTags[tagName].Halvalla={tagName:tagName,boss:oracle.name}
+    thing= allTags[tagName]
     return thing
 
 # global Oracle
@@ -104,13 +92,18 @@ class Halvalla
 
   quote:quote
 
+  resetStack: (stack=null) ->
+    #console.log "STACK",@stack
+    previous = @stack
+    @stack = stack
+    return previous
 
   pureComponent: (contents) ->
     return =>
-      @bagMan.context []
-      @bagMan.shipOut contents.apply @, arguments
-      stackHad=@bagMan.harvest()
-      #console.log "Pure ", st
+      previous = @.resetStack []
+      result = contents.apply @, arguments
+      stackHad=@resetStack previous
+      #console.log "Pure ", stackHad
       #console.log "WAS ",previous
       return stackHad
 
@@ -121,15 +114,16 @@ class Halvalla
       el = oracle.trust text
     else
       el = oracle.createElement 'text', dangerouslySetInnerHTML: __html: text.toString()
-    return @bagMan.shipOut el
+    @stack?.push el
+    return el
 
   doctype: (type=5) ->
     @raw doctypes[type]
 
-  ie: (condition,contents)->
+  ie: (condition,contents)=>
     @crel 'ie',condition:condition,contents
 
-  tag: (tagName,args...) ->
+  tag: (tagName,args...) =>
     unless tagName? && 'string'== typeof tagName
       throw new Error "HTML tag type is invalid: expected a string but got #{typeof tagName?}"
     {attrs, contents} = @normalizeArgs args
@@ -140,8 +134,11 @@ class Halvalla
   bless: (component,itsName=null)->
     component = component.default if component.__esModule && component.default
     name = itsName || component.name
-    name = name[0].toLowerCase()+name.slice 1
-    allTags[name]= Halvalla::[name] = (args...) => @crel component, args...
+    creator= (name,args...)=>
+      y = oracle.createElement component,args...
+      #console.log "newly instnce",y
+      return y
+    return @mutator name,creator,component
 
   renderContents: (contents, rest...) ->
     #for Teacup style signatures, we expect a single parameter-less function
@@ -151,12 +148,14 @@ class Halvalla
     if typeof contents is 'function'
       contents = contents.apply @, rest
     if typeof contents is 'number'
-      return @bagMan.shipOut new Number contents
+      @stack.push contents
+      return
     if typeof contents is 'string'
-      return @bagMan.shipOut new String contents
+      @stack.push contents
+      return
     if contents.length >0
-      return @bagMan.shipOut contents...
-    return []
+      @stack.push contents...
+    return
 
   component: (func) ->
     (args...) =>
@@ -167,35 +166,35 @@ class Halvalla
       func.apply @, [selector, attrs, renderContents]
 
 
-  crelVoid: (tagName, args...) ->
+  crelVoid: (tagName, args...) =>
     {attrs, contents} = @normalizeArgs args
     if contents.length > 0
       throw new Error "Element type is invalid: must not have content: #{tagName}"
+    debugger
     el = oracle.createElement tagName, attrs,null
-    return @bagMan.shipOut el
+    @stack?.push el
+    return el
 
-  crel: (tagName, args...) ->
+  crel: (tagName, args...) =>
     unless tagName?
       throw new Error "Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: #{tagName}"
     {attrs, contents} = @normalizeArgs args
-    children =  if contents.length > 0
-        oldBagger = @bagMan
-        @bagMan = new BagMan
-        @bagMan.context contents
-        @march @bagMan
-        contents = @bagMan.harvest()
-        @bagMan = oldBagger
-        #console.log "Children",contents
-        contents
-      else
-        []
-    el = oracle.createElement tagName, attrs, children...
-    @bagMan.shipOut el
+    previous = @.resetStack []
+    @march contents
+    stackHad= @resetStack previous
+    children = stackHad
+    #if !children || children == [stackHad.slice -1][0]
+    if children?.splice
+      el = oracle.createElement tagName, attrs, children...
+    else
+      el = oracle.createElement tagName, attrs, children
+    @stack?.push el
     return el
 
   text: (s) ->
     return s unless s?.toString
-    return @bagMan.shipOut s.toString()
+    @stack?.push(s.toString())
+    return s.toString()
 
   isSelector: (string) ->
     string.length > 1 and string.charAt(0) in ['#', '.']
@@ -213,7 +212,6 @@ class Halvalla
     return {id, classes}
 
   normalizeArgs: (args) ->
-    args = [args] if !args.length
     attrs = {}
     selector = null
     contents = null
@@ -224,12 +222,16 @@ class Halvalla
             selector = arg
             parsedSelector = @parseSelector(arg)
           else
-            contents= new String arg
+            contents= arg
         when 'number', 'boolean'
-          contents= new String arg
+          contents= arg
         when 'function'
-          contents = arg
-
+          if oracle.preInstantiate
+            stuff = @render arg
+            stuff = normalizeArray stuff
+            contents= stuff
+          else
+            contents= arg
         when 'object'
           if arg.constructor == Object
             attrs = arg
@@ -239,8 +241,6 @@ class Halvalla
               (clone, key) -> clone[key] = arg[key]; clone
               {}
             )
-          if arg.toString?() != '[object Object]'
-            contents = arg.toString()
           else if arg.length?
             contents= arg
         else
@@ -272,7 +272,7 @@ class Halvalla
   use: (plugin) ->
     plugin @
 
-  renderable: (stuff)->
+  renderable: (stuff)=>
     return (args...) =>
       oracle.conjurer @render stuff, args...
   #
@@ -281,68 +281,87 @@ class Halvalla
     @render args...
 
   #liftedd from teacup renderer.  This side only does the instantiation
-  march: (bag)->
-    while component = bag.inspect()
-      #console.log "March - to component",component
-      switch n=component.constructor.name
-        when 'Function'
-          y=bag.harvest()
-          x = component() # evaluate and push back
-          if 'function' == typeof x
-            w = x()
-            x=w
-          z=bag.harvest()
-          bag.reinspect x
-          break
-        when 'String','Number' then bag.shipOut component
-        when  n[0].toLowerCase()+n.slice 1 then bag.shipOut component
-        else
+  march: (component)->
+    return null unless (value=component?.toString())
+    console.log "March - component",component
+    switch typeof component
+      when 'function'
+        # this is likeley a function outsode of halvalla,
+        # 'we' all look like functions on the backbone and return null.
+        # otherwise it's 'outside' and returns a result both are marchable
+        # the exceptions are crel and crelVoid they do too much
+        l = @stack.length
+        result = component()
+        @march result if l== @stack.length
+        return null
+      when 'string','number'
+        @stack.push component
+        return null
+      when (Array.isArray component) && 'object'
+        @march c for c in component
+      when (value != '[object Object]') && 'object'
+       return null
+      when 'object'
+        try
           tagName = oracle.getName component
           #console.log 'Tagname of March component type object',tagName
-          if 'string'== typeof tagName
-            bag.shipOut component
-            break
           if 'function' == typeof tagName
             #this component has not been instantiated yet
             tagConstructor = tagName
             tagName = tagConstructor.name
-            tagNameLC = tagName[0].toLowerCase()+tagName.slice 1
             if component.attrs
               attrs = component.attrs
             else
               attrs = component.props
-            if tagName[0] != tagNameLC[0]
+            if tagName[0] != tagName[0].toLowerCase()
+              tagName = tagName[0].toLowerCase()+tagName.slice 1
               #console.log "Activvating NEW"
-              unless Halvalla::[tagNameLC]  #generate alias for stack dumps
-                Halvalla::[tagNameLC]= (component, args...) -> @crel tagNameLC,component,args...
-              #crell = new tagConstructor tagNameLC,attrs,component.children
-              #console.log "calling crel A", crell
-              crellB = @[tagNameLC] attrs,oracle.getChildren component
-              #console.log "calling crel B", crellB
-              bag.shipOut crellB
-              break
+              unless Halvalla::[tagName]  #generate alias for stack dumps
+                Halvalla::[tagName]= (component, args...) -> @crel tagName,component,args...
+              crell= @crel tagConstructor,attrs,component.props.children
+              console.log "calling crel A", crell
             else
-              #render the node and append it to the htmlOout string
-              bag.shipOut @[tagNameLC] '.selectorCase',attrs,oracle.getChildren component
-    return null
-    
-  create: (node,rest...)->
-    if 'function' == typeof node
-      @bagMan.context ()=>node rest...
-      @march @bagMan
-      structure= @bagMan.harvest()
-    else
-      structure = new String node
+              crell=@[tagName] args...
+              console.log "calling crel B", crell
+            return null
+            #@march node
+          else
+            #node has been instantiated and may be pushed to the output stack
+            @stack.push component
+            return
+        catch badDog
+          console.error badDog
+          debugger
+          throw badDog
+      else
+        debugger
+        throw new Error "bad component?",component
+        return
+    return
+
+  render: (node,rest...)->
+    previous = @.resetStack []
+    try
+      @march node rest...
+    catch badDog
+      debugger
+      throw badDog
+    structure= @.resetStack previous
+    if previous != null
+      debugger
+      #console.log "Bad Previous"
+      #throw new Error "Stack structure violation"
+    @.resetStack()
     #console.log "Render Structure sent to oracle.conjurer",structure
-    return structure 
-  
-  render: (funct)->
-    structure = @create funct
-    result = for element in structure
-      #console.log "Render element sent to oracle.conjurer",element
-      oracle.conjurer element
+    structure = structure[0]
+    switch typeof structure
+      when 'string','number'
+        structure = @crel 'text','', structure
+
+    #console.log "Render Structure sent to oracle.conjurer",structure
+    result = oracle.conjurer structure
     #console.log "And it ends with a caboom",result
-    return result.join ''
+    return result
   #
   # Binding
   #
@@ -352,7 +371,7 @@ class Halvalla
     bound.Component = dummyComponent
     bound.Element = dummyElement
     boundMethodNames = [].concat(
-      'create bless cede component doctype escape ie normalizeArgs pureComponent raw render renderable tag text use'.split(' ')
+      'bless cede component doctype escape ie normalizeArgs pureComponent raw render renderable tag text use'.split(' ')
       mergeElements 'regular', 'obsolete', 'raw', 'void', 'obsolete_void', 'script','coffeescript','comment'
     )
     for method in boundMethodNames

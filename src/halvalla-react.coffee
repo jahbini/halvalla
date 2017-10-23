@@ -12,9 +12,10 @@ Oracle =
     conjurer: ReactDom.renderToStaticMarkup
     preInstantiate: false
     getProp: (element)->element.props
+    getChildren: (element)->element.props.children
     propertyName: 'props'
     getName: (element)->element.tagName || element.type
-{Halvalla} = require '../src/halvalla.coffee'
+{Halvalla} = require '../lib/halvalla'
 C=new Halvalla Oracle
 module.exports= C.tags()
 module.exports.Halvalla =Halvalla

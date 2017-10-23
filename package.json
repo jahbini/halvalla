@@ -105,10 +105,10 @@
     "compile": "coffee --compile --output lib/ src/",
     "prepublish": "npm run compile",
     "pretest": "npm run compile",
-    "test-mithril": "rm test; ln -s test-mithril test; mocha; rm test ",
-    "test-react": "rm test; ln -s test-react test; mocha; rm test",
-    "test-teacup": "rm test; ln -s test-teacup test; mocha; rm test",
-    "test": "npm run test-mithril; npm run test-react; npm run test-teacup"
+    "test-mithril": "rm test; ln -s test-mithril test; mocha",
+    "test-react": "rm test; ln -s test-react test; mocha",
+    "test-teacup": "rm test; ln -s test-teacup test; mocha",
+    "test": "npm run test-mithril; npm run test-react; npm run test-teacup; rm test"
   },
   "version": "0.10.1"
 }

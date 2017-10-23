@@ -16,7 +16,7 @@ Oracle =
     trust: (text)-> Mithril.trust text # how to specify unescaped text
 
 #require the Halvalla engine, but throw away it's default Oracle's tags
-{Halvalla} = require '../src/halvalla.coffee'
+{Halvalla} = require '../lib/halvalla'
 # create a new Halvalla with new overrides
 #export identically to the original Halvalla
 module.exports= (new Halvalla Oracle).tags()

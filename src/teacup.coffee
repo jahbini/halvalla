@@ -1,68 +1,27 @@
 
-{doctypes,elements,normalizeArray,mergeElements,allTags,escape,quote} = require '../src/html-tags'
+{doctypes,elements,normalizeArray,mergeElements,allTags,escape,quote,BagMan} = require '../lib/html-tags'
 module.exports = Teacup = class Teacup
   constructor: (@instantiator,@oracle)->
-    @htmlOut = null
-    @functionOut = null
 
-  resetFunctionBuffer: (html=null) ->
-    previous = @functionOut
-    @functionOut = html
-    return previous
-
-  resetBuffer: (html=null) ->
-    previous = @htmlOut
-    @htmlOut = html
-    return previous
-
-  march: (component)->
-      return '' unless (value=component?.toString())
+  march: (bag)->
+    while component = bag.inspect()
       #console.log "March Teacup",component
-      switch typeof component
-        when 'function' then @march @instantiator component
-        when 'string','number' then @raw component.toString()
-        when (Array.isArray component) && 'object'
-          @march c for c in component
-        when (value != '[object Object]') && 'object'
-          @textOnly component
-        when 'object'
-          try
-            tagName = @oracle.getName component
-            if 'function' == typeof tagName
-              #debugger
-              #this component has not been instantiated yet
-              tagConstructor = tagName
-              tagName = tagConstructor.name
-              if component.attrs
-                attrs = component.attrs
-              else
-                attrs = component.props
-              node = new tagConstructor tagName,attrs,component.children
-              unless Teacup::[tagName]  #generate alias for stack dumps
-                Teacup::[tagName]= (component, args...) -> @tag component,args...
-              @march node
-            else
-              #node has been instantiated
-              unless Teacup::[tagName]  #generate alias for stack dumps
-                Teacup::[tagName]= (component, args...) -> @tag component,args...
-              #render the node and append it to the htmlOout string
-              @[tagName] component
-          catch badDog
-            debugger
-            throw badDog
-        else
-          debugger
-          @textOnly "bad component?"
-          @textOnly component.toString()
-          return
-      return
+      switch n=component.constructor.name
+        when 'Function' then @bag.reinspect @instantiator component
+        when 'String','Number' then @bag.shipOut component.toString()
+        when 'Array' then throw new Error 'invalid array from bagman'
+        #render the node and append it to the htmlOout string
+        else 
+          tagName = @oracle.getName component
+          throw new Error "unclean component",component unless component._Halvalla
+          bag.shipOut @[tagName] component
 
-  render: (component,args...) ->
-    previous = @resetBuffer('')
+  render: (component) ->
+    bag=new BagMan component
     try
-      @march component, args...
+      @march bag
     finally
-      result = @resetBuffer previous
+      result = bag.harvest()
     return result
 
   # alias render for coffeecup compatibility
@@ -125,37 +84,39 @@ module.exports = Teacup = class Teacup
   tag: (cell) ->
     {children} = cell
     #console.log "CELL!",cell
-    #debugger
     props=@oracle.getProp cell
     tagName=@oracle.getName cell
-    @raw "<#{tagName}#{@renderAttrs props}>" unless tagName == 'text'
+    result = ''
+    result += "<#{tagName}#{@renderAttrs props}>" unless tagName == 'text'
     if cell.text
-      @textOnly cell.text
+      result += cell.text
     if props?.dangerouslySetInnerHTML
-      @raw props.dangerouslySetInnerHTML.__html
+      result += props.dangerouslySetInnerHTML.__html
     else
-      @march children
-    @raw "</#{tagName}>" unless tagName == 'text'
+      result += @render children
+    result += "</#{tagName}>" unless tagName == 'text'
+    return result
 
   rawMithril:(cell)->
-    @raw cell.children
-    return
+    return cell.children
 
   rawTag: (cell) ->
     {children} = cell
     props=@oracle.getProp cell
     tagName=@oracle.getName cell
-    @raw "<#{tagName}#{@renderAttrs props}>"
-    @raw children
-    @raw "</#{tagName}>"
+    result = "<#{tagName}#{@renderAttrs props}>"
+    result += children
+    result += "</#{tagName}>"
+    return result
 
   scriptTag: (cell) ->
     {children} = cell
     props=@oracle.getProp cell
     tagName=@oracle.getName cell
-    @raw "<#{tagName}#{@renderAttrs props}>"
-    @renderContents children
-    @raw "</#{tagName}>"
+    result = "<#{tagName}#{@renderAttrs props}>"
+    result += @renderContents children
+    result += "</#{tagName}>"
+    return result
 
   selfClosingTag: (cell) ->
     {children} = cell
@@ -163,11 +124,11 @@ module.exports = Teacup = class Teacup
     tagName=@oracle.getName cell
     if (normalizeArray children).length != 0
       throw new Error "Halvalla: <#{tagName}/> must not have content.  Attempted to nest #{children}"
-    @raw "<#{tagName}#{@renderAttrs props} />"
+    return "<#{tagName}#{@renderAttrs props} />"
 
   coffeescriptTag: (cell) ->
     fn = cell.children
-    @raw """<script type="text/javascript">(function() {
+    return """<script type="text/javascript">(function() {
       var __slice = [].slice,
           __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
           __hasProp = {}.hasOwnProperty,
@@ -176,28 +137,20 @@ module.exports = Teacup = class Teacup
     })();</script>"""
 
   commentTag: (text) ->
-    @raw "<!--#{escape text.children}-->"
+    return "<!--#{escape text.children}-->"
 
   doctypeTag: (type=5) ->
-    @raw doctypes[type]
+    return doctypes[type]
 
   ie: (cell)->
-    @raw "<!--[if #{escape cell.props.condition}]>"
-    @march cell.children
-    @raw "<![endif]-->"
+    result = "<!--[if #{escape cell.props.condition}]>"
+    result += @render cell.children
+    result += "<![endif]-->"
+    return result
 
   textOnly: (s) ->
-    unless @htmlOut?
-      throw new Error("Halvalla: can't call a tag function outside a rendering context")
-    @htmlOut += s? and escape(s.toString()) or ''
     #console.log "text appends ",s? and escape(s.toString()) or ''
-    null
-
-  raw: (s) ->
-    return unless s?
-    @htmlOut += s
-    #console.log "raw appends ",s? and escape(s.toString()) or ''
-    null
+    return new String (s? and escape(s.toString()) or '')
 
 # Define tag functions on the prototype for pretty stack traces
 for tagName in mergeElements 'regular', 'obsolete'
