@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{img, br, link,render} = require '../src/halvalla-react'
+{img, br, link,render} = require '../lib/halvalla-react'
 #{render} = require './helpers'
 
 describe 'Self Closing Tags', ->

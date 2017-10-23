@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{div, p,render} = require '../src/halvalla-react'
+{div, p,render} = require '../lib/halvalla-react'
 #{render} = require './helpers'
 
 describe 'stack trace', ->

@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{a, br, div,render} = require '../src/halvalla-react'
+{a, br, div,render} = require '../lib/halvalla-react'
 
 describe 'Attributes', ->
 

@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{h1,render} = require '../src/halvalla-react'
+{h1,render} = require '../lib/halvalla-react'
 #{render} = require './helpers'
 
 describe 'Context data', ->

@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{renderable, div, p} = require '../src/halvalla-mithril'
+{renderable, div, p} = require '../lib/halvalla-mithril'
 
 describe 'stack trace', ->
   it 'should contain tag names', ->

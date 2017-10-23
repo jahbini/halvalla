@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{render, ie, link} = require '../src/halvalla'
+{render, ie, link} = require '../lib/halvalla'
 
 describe 'IE conditionals', ->
   it 'renders conditional comments', ->

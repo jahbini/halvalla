@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-teacup = require '../src/halvalla'
+teacup = require '../lib/halvalla'
 return #JAH
 connectAssets = require '../lib/connect-assets'
 

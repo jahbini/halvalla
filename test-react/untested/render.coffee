@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{render,raw, cede, div, p, strong, a} = require '../src/halvalla-react'
+{render,raw, cede, div, p, strong, a} = require '../lib/halvalla-react'
 #{render} = require './helpers'
 
 describe 'render', ->

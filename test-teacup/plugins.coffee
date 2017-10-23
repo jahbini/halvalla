@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-teacup = require '../src/halvalla'
+teacup = require '../lib/halvalla'
 
 describe 'plugins', ->
   it 'are applied via use', ->

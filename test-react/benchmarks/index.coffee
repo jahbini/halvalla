@@ -1,6 +1,6 @@
 {Suite} = require 'benchmark'
 React = require 'react'
-{crel} = require '../../src/halvalla-react'
+{crel} = require '../../lib/halvalla-react'
 {render} = require '../helpers'
 
 new Suite()

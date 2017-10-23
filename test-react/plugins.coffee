@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-halvalla = require '../src/halvalla-react'
+halvalla = require '../lib/halvalla-react'
 
 describe 'plugins', ->
   it 'are applied via use', ->

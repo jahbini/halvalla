@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{tag, p, div, script,render} = require '../src/halvalla-react'
+{tag, p, div, script,render} = require '../lib/halvalla-react'
 
 describe 'render', ->
   it 'renders text verbatim', ->

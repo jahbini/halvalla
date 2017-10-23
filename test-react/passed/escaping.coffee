@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{render,raw, script, escape, h1, input} = require '../src/halvalla-react'
+{render,raw, script, escape, h1, input} = require '../lib/halvalla-react'
 #{render} = require './helpers'
 
 describe 'Auto escaping', ->

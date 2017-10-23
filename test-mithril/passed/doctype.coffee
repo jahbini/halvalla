@@ -1,6 +1,6 @@
 expect = require 'expect.js'
 debugger
-{render, doctype} = require '../src/halvalla-mithril'
+{render, doctype} = require '../lib/halvalla-mithril'
 
 describe 'doctype', ->
   it 'default should render html5 doctype', ->

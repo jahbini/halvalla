@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{renderable, coffeescript} = require '../src/halvalla-mithril'
+{renderable, coffeescript} = require '../lib/halvalla-mithril'
 
 describe 'coffeescript', ->
   it 'renders script tag and javascript with coffee preamble scoped only to that javascript', ->

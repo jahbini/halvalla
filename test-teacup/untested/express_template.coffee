@@ -1,4 +1,4 @@
-{renderable, p} = require '../src/halvalla'
+{renderable, p} = require '../lib/halvalla'
 
 module.exports = renderable ({name}) ->
   # Flag used to assert timing of rendering

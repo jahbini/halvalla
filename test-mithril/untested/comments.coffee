@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{render, comment} = require '../src/halvalla-mithril'
+{render, comment} = require '../lib/halvalla-mithril'
 
 describe 'Comments', ->
   it 'renders HTML <!--comments-->', ->

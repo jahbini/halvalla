@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{render, raw, cede, div, p, strong, a} = require '../src/halvalla'
+{render, raw, cede, div, p, strong, a} = require '../lib/halvalla'
 
 describe 'render', ->
   describe 'nested in a template', ->

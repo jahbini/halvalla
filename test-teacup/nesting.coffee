@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{render, div, p} = require '../src/halvalla'
+{render, div, p} = require '../lib/halvalla'
 
 describe 'nesting templates', ->
   it 'renders nested template in the same output', ->

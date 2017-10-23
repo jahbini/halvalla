@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{tag,Component, p,use, div,text, script, span,render,renderable,bless} = require '../src/halvalla-react'
+{tag,Component, p,use, div,text, script, span,render,renderable,bless} = require '../lib/halvalla-react'
 re=require 'react'
 
 dooDad = bless class DooDad extends Component

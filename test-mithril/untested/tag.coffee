@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{renderable, p, div, script} = require '../src/halvalla-mithril'
+{renderable, p, div, script} = require '../lib/halvalla-mithril'
 
 describe 'tag', ->
   it 'renders Dates', ->

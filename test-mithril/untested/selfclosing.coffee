@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{renderable, img, br, link} = require '../src/halvalla-mithril'
+{renderable, img, br, link} = require '../lib/halvalla-mithril'
 
 describe 'Self Closing Tags', ->
   describe '<img />', ->

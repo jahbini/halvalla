@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{render, tag, input, normalizeArgs} = require '../src/halvalla'
+{render, tag, input, normalizeArgs} = require '../lib/halvalla'
 
 describe 'custom tag', ->
   it 'should render', ->

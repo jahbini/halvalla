@@ -1,6 +1,6 @@
 expect = require 'expect.js'
 {render,html, head, meta, link, style, title, script, body,
-coffeescript, header, section, nav, footer, h1, h2, ul, li, a, p} = require '../src/halvalla-react'
+coffeescript, header, section, nav, footer, h1, h2, ul, li, a, p} = require '../lib/halvalla-react'
 
 describe 'coffeekup.org example', ->
 

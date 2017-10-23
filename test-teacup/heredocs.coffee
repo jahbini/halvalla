@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{render, script} = require '../src/halvalla'
+{render, script} = require '../lib/halvalla'
 
 describe 'HereDocs', ->
   it 'preserves line breaks', ->
