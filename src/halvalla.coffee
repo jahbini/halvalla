@@ -21,7 +21,6 @@ Examples of oracle -- the default is to do Teacup to HTML
     Component: {}
 
 ###
-#teact = require '../lib/teact'
 {doctypes,elements,normalizeArray,mergeElements,allTags,escape,quote,BagMan} = require '../lib/html-tags'
 teacup = require '../lib/teacup'
 #if we are using React as the master, it supplies a class, otherwise an empty class with an empty view
@@ -39,14 +38,14 @@ class Halvalla
       constructor: (instantiator,Oracle={})->
         defaultObject =
           isValidElement: (c)->c.view?
-          name: 'great-emptiness'
+          name:  Oracle.name || 'great-emptiness'
           Component: Oracle.Component || class Component
           Element: Oracle.Element || class Element
           createElement: (args...)-> new dummyElement args...
           summoner: null
           getChildren: (element)->element.children
           getProp: (element)->element.attrs
-          getName: (element)->element._Halvalla?.tagName|| element.tag || element.type
+          getName: (element)->element.type||element._Halvalla?.tagName|| element.tagName
           propertyName: 'attrs'
           conjurer: null
         # decorate this singleton with
@@ -56,18 +55,18 @@ class Halvalla
         @conjurer= @teacup.render.bind @teacup unless @conjurer
         @
     #
-    oracle = new GreatEmptiness @crel,Oracle
+    oracle = new GreatEmptiness ((component)=>@create component),Oracle
     propertyName = oracle.propertyName
     dummyComponent = class Component extends oracle.Component
       constructor:(tagName,properties,children...)->
         super properties,children...
         @tagName=tagName
         @[propertyName] = properties unless @[propertyName]
-        @children =children unless @[propertyName].children
+        @children = @render
         @_Halvalla =
           propertyName:propertyName
-          #children:@[properties].children
-          #tagname: tagName[0].toLowerCase()+tagName.slice 1
+          children:@render
+          tagname: tagName[0].toLowerCase()+tagName.slice 1
         return @
 
       render: ->
@@ -91,7 +90,7 @@ class Halvalla
 
   mutator: (tagName,destination,withThis=null)->
     do (tagName)=>
-      Halvalla::[tagName] = (args...) -> destination.apply @, [tagName].concat args
+      Halvalla::[tagName] = (args...) => destination.apply @, [tagName].concat args
     thing= Halvalla::[tagName]
     thing.Halvalla={tagName:tagName,boss:oracle.name}
     allTags[tagName] = thing
@@ -292,7 +291,7 @@ class Halvalla
             w = x()
             x=w
           z=bag.harvest()
-          bag.reinspect x
+          bag.reinspect if z.length>0 then z else x
           break
         when 'String','Number' then bag.shipOut component
         when  n[0].toLowerCase()+n.slice 1 then bag.shipOut component

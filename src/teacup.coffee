@@ -2,26 +2,48 @@
 {doctypes,elements,normalizeArray,mergeElements,allTags,escape,quote,BagMan} = require '../lib/html-tags'
 module.exports = Teacup = class Teacup
   constructor: (@instantiator,@oracle)->
+    @bagMan = new BagMan
 
   march: (bag)->
     while component = bag.inspect()
-      #console.log "March Teacup",component
+      console.log "March Teacup",component
       switch n=component.constructor.name
-        when 'Function' then @bag.reinspect @instantiator component
-        when 'String','Number' then @bag.shipOut component.toString()
+        when 'Function' then bag.reinspect @instantiator component
+        when 'String','Number' then bag.shipOut component.toString()
         when 'Array' then throw new Error 'invalid array from bagman'
         #render the node and append it to the htmlOout string
         else 
-          tagName = @oracle.getName component
           throw new Error "unclean component",component unless component._Halvalla
-          bag.shipOut @[tagName] component
+          tagName=@oracle.getName component
+          if 'function' == typeof component.tagName
+              #this component has not been instantiated yet
+              tagConstructor = component.tagName
+              if component.attrs
+                attrs = component.attrs
+              else
+                attrs = component.props
+              node = new tagConstructor tagName,attrs,component.children
+              console.log "newly instantiated node",node
+              unless Teacup::[tagName]  #generate alias for stack dumps
+                Teacup::[tagName]= (component, args...) -> @tag component,args...
+              bag.reinspect node
+              break
+          if @[tagName]
+            bag.shipOut @[tagName] component
+          else
+            throw new Error "Component without teacup renderer: #{tagName}"
+            #bag.shipOut @instantiator component    
+    return null          
+
 
   render: (component) ->
-    bag=new BagMan component
-    try
-      @march bag
-    finally
-      result = bag.harvest()
+    oldBagger = @bagMan
+    @bagMan = new BagMan
+    @bagMan.context component
+    @march @bagMan
+    result = @bagMan.harvest().join ''
+    @bagMan = oldBagger
+    console.log "Final Render",result
     return result
 
   # alias render for coffeecup compatibility
@@ -93,6 +115,7 @@ module.exports = Teacup = class Teacup
     if props?.dangerouslySetInnerHTML
       result += props.dangerouslySetInnerHTML.__html
     else
+      debugger
       result += @render children
     result += "</#{tagName}>" unless tagName == 'text'
     return result

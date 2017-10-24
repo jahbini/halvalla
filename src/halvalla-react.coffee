@@ -15,6 +15,7 @@ Oracle =
     getChildren: (element)->element.props.children
     propertyName: 'props'
     getName: (element)->element.tagName || element.type
+    
 {Halvalla} = require '../lib/halvalla'
 C=new Halvalla Oracle
 module.exports= C.tags()
