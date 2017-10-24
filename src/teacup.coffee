@@ -6,7 +6,7 @@ module.exports = Teacup = class Teacup
 
   march: (bag)->
     while component = bag.inspect()
-      console.log "March Teacup",component
+      #console.log "March Teacup",component
       switch n=component.constructor.name
         when 'Function' then bag.reinspect @instantiator component
         when 'String','Number' then bag.shipOut component.toString()
@@ -23,7 +23,7 @@ module.exports = Teacup = class Teacup
               else
                 attrs = component.props
               node = new tagConstructor tagName,attrs,component.children
-              console.log "newly instantiated node",node
+              #console.log "newly instantiated node",node
               unless Teacup::[tagName]  #generate alias for stack dumps
                 Teacup::[tagName]= (component, args...) -> @tag component,args...
               bag.reinspect node
@@ -43,7 +43,7 @@ module.exports = Teacup = class Teacup
     @march @bagMan
     result = @bagMan.harvest().join ''
     @bagMan = oldBagger
-    console.log "Final Render",result
+    #console.log "Final Render",result
     return result
 
   # alias render for coffeecup compatibility
