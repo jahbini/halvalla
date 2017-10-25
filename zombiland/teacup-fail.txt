@@ -2,6 +2,18 @@
 
   a class enclosed div
 Looking at - undefined
+Element construct Element {
+  children: [],
+  tagName: 
+   { [Function: DivDad]
+     __super__: Component { constructor: [Object], render: [Function] } },
+  attrs: {},
+  _Halvalla: { tagName: 'divDad', propertyName: 'attrs', children: undefined } }
+Element attrs should be object, typeof this.attrs =  object
+Element arguments { '0': 
+   { [Function: DivDad]
+     __super__: Component { constructor: [Object], render: [Function] } },
+  '1': {} }
 shipping Element {
   children: [],
   tagName: 
@@ -18,8 +30,18 @@ March Teacup Element {
   tagName: 
    { [Function: DivDad]
      __super__: Component { constructor: [Object], render: [Function] } },
-  attrs: {}, !!! JAH ATTRS IS AN EMPTY oBJECT THAT SOMEHOW IS NOT THE SAME AS EMPTY
+  attrs: {},
   _Halvalla: { tagName: 'divDad', propertyName: 'attrs', children: undefined } }
+Component construct DivDad {
+  render: [Function],
+  tagName: 'divDad',
+  attrs: {},
+  children: [Function],
+  _Halvalla: 
+   { propertyName: 'attrs',
+     children: [Function],
+     tagname: 'divDad' } }
+Component arguments { '0': 'divDad', '1': {}, '2': [] }
 Looking at - undefined
 March Teacup DivDad {
   render: [Function],
@@ -37,6 +59,15 @@ Looking at - undefined
 shipping [String: 'wow']
 output length 0
 Looking at - undefined
+Element construct Element {
+  children: [String: 'wow'],
+  tagName: 'div',
+  attrs: { class: 'bango', className: 'bango' },
+  _Halvalla: { tagName: 'div', propertyName: 'attrs', children: undefined } }
+Element attrs should be object, typeof this.attrs =  object  !!! yes! JAH
+Element arguments { '0': 'div',
+  '1': { class: 'bango', className: 'bango' },
+  '2': [String: 'wow'] }
 shipping Element {
   children: [String: 'wow'],
   tagName: 'div',
