@@ -52,6 +52,8 @@ March Teacup DivDad {
    { propertyName: 'attrs',
      children: [Function],
      tagname: 'divDad' } }
+Teacup::tag Typeof props to render object
+Teacup::tag early result <divDad class>
 Looking at - undefined
 March Teacup function (){ return fn.apply(me, arguments); }
 Looking at - undefined
@@ -64,7 +66,7 @@ Element construct Element {
   tagName: 'div',
   attrs: { class: 'bango', className: 'bango' },
   _Halvalla: { tagName: 'div', propertyName: 'attrs', children: undefined } }
-Element attrs should be object, typeof this.attrs =  object  !!! yes! JAH
+Element attrs should be object, typeof this.attrs =  object
 Element arguments { '0': 'div',
   '1': { class: 'bango', className: 'bango' },
   '2': [String: 'wow'] }
@@ -82,16 +84,20 @@ March Teacup Element {
   tagName: 'div',
   attrs: { class: 'bango', className: 'bango' },
   _Halvalla: { tagName: 'div', propertyName: 'attrs', children: undefined } }
+Teacup::tag Typeof props to render object
+Teacup::tag early result <div class="bango">
 Looking at - undefined
 March Teacup [String: 'wow']
 shipping wow
 output length 0
 Looking at - undefined
 Final Render wow
+Teacup::tag final result <div class="bango">wow</div>
 shipping <div class="bango">wow</div>
 output length 0
 Looking at - undefined
 Final Render <div class="bango">wow</div>
+Teacup::tag final result <divDad class><div class="bango">wow</div></divDad>
 shipping <divDad class><div class="bango">wow</div></divDad>
 output length 0
 Looking at - undefined
@@ -99,7 +105,7 @@ Final Render <divDad class><div class="bango">wow</div></divDad>
     1) without decoration
 
 
-  0 passing (26ms)
+  0 passing (23ms)
   1 failing
 
   1) a class enclosed div
