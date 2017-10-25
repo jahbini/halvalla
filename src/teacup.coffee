@@ -6,7 +6,7 @@ module.exports = Teacup = class Teacup
 
   march: (bag)->
     while component = bag.inspect()
-      #console.log "March Teacup",component
+      console.log "March Teacup",component
       switch n=component.constructor.name
         when 'Function' then bag.reinspect @instantiator component
         when 'String','Number' then bag.shipOut component.toString()
@@ -43,7 +43,7 @@ module.exports = Teacup = class Teacup
     @march @bagMan
     result = @bagMan.harvest().join ''
     @bagMan = oldBagger
-    #console.log "Final Render",result
+    console.log "Final Render",result
     return result
 
   # alias render for coffeecup compatibility
@@ -63,7 +63,6 @@ module.exports = Teacup = class Teacup
         template.apply @, args
 
   renderAttr: (name, value) ->
-    return '' if name == 'className' # && !oracle.useClassName
     if not value?
       return " #{name}"
 
@@ -81,6 +80,9 @@ module.exports = Teacup = class Teacup
   attrOrder: ['id', 'class']
   renderAttrs: (obj) ->
     return '' unless obj
+    if className=obj.class || obj.className
+      obj.class = className
+      delete obj.className 
     result = ''
 
     # render explicitly ordered attributes first
@@ -107,17 +109,20 @@ module.exports = Teacup = class Teacup
     {children} = cell
     #console.log "CELL!",cell
     props=@oracle.getProp cell
+    console.log "Teacup::tag Typeof props to render", typeof props
     tagName=@oracle.getName cell
     result = ''
+    debugger
     result += "<#{tagName}#{@renderAttrs props}>" unless tagName == 'text'
+    console.log "Teacup::tag early result", result
     if cell.text
       result += cell.text
     if props?.dangerouslySetInnerHTML
       result += props.dangerouslySetInnerHTML.__html
     else
-      debugger
       result += @render children
     result += "</#{tagName}>" unless tagName == 'text'
+    console.log "Teacup::tag final result", result
     return result
 
   rawMithril:(cell)->
@@ -180,6 +185,7 @@ for tagName in mergeElements 'regular', 'obsolete'
   do (tagName) ->
     Teacup::[tagName] = (args...) -> @tag args...
 Teacup::['<'] = (args...) -> @rawMithril args...
+Teacup::['text'] = (args...) -> @tag args...
 
 for tagName in mergeElements 'raw'
   do (tagName) ->

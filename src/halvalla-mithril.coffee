@@ -9,10 +9,11 @@ Oracle =
     name: 'Mithril'    # his name
     createElement: Mithril    #he creates without hassle, but requires us to
     preInstantiate: true      # instantiate the whole virtual DOM before rendering
-
+    getChildren: (element)->element.children
     getProp: (element)->element.attrs  # where does mithril stash this info?
     getName: (element)->element.tag
     propertyName: 'attrs'
+    getName: (element)-> element.tag
     trust: (text)-> Mithril.trust text # how to specify unescaped text
 
 #require the Halvalla engine, but throw away it's default Oracle's tags

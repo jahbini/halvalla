@@ -67,7 +67,9 @@ class Halvalla
           propertyName:propertyName
           children:@render
           tagname: tagName[0].toLowerCase()+tagName.slice 1
-        return @
+        console.log "Component construct",@
+        console.log "Component arguments",arguments
+        return
 
       render: ->
 
@@ -85,7 +87,11 @@ class Halvalla
           tagName: name[0].toLowerCase()+name.slice 1
           propertyName:propertyName
           children:@[propertyName].children
-        @
+        console.log "Element construct",@
+        console.log "Element attrs should be object, typeof this.attrs = ",typeof @.attrs
+        console.log "Element arguments",arguments
+        return
+        
       view: ->
 
   mutator: (tagName,destination,withThis=null)->
@@ -189,6 +195,7 @@ class Halvalla
       else
         []
     el = oracle.createElement tagName, attrs, children...
+    el._Halvalla= {} unless el._Halvalla
     @bagMan.shipOut el
     return el
 
@@ -291,7 +298,13 @@ class Halvalla
             w = x()
             x=w
           z=bag.harvest()
+          ###
+          we shold not reinspect more than just the single return from x()
+          Why did the entire z need to be put in?
           bag.reinspect if z.length>0 then z else x
+          ###
+          
+          bag.reinspect x
           break
         when 'String','Number' then bag.shipOut component
         when  n[0].toLowerCase()+n.slice 1 then bag.shipOut component

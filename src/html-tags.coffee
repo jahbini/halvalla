@@ -40,7 +40,7 @@ elements =
   obsolete_void: 'basefont frame'
 
 normalizeArray= (b)->
-  #turn b to an array of non-empty elements. useful for making all children
+  #turn b to an array of non-empty elements. useful for makin/g all children
   # look uniform as an array for subsequent iteration
   # 123 turns into [123], [bob,null,sue] turns into [bob,sue]
   # nullish input turns into []
@@ -66,15 +66,20 @@ BagMan = class BagMan
     
   shipOut: (stuff)=>
     return stuff unless @shipment
-    #console.log "shipping",stuff
     return stuff if stuff == @lastShipment
+    console.log "shipping",stuff
+    console.log "output length",@shipment.length
     @lastShipment = stuff
     cleanStuff = normalizeArray stuff
     for eachItem in cleanStuff
       @shipment.push eachItem
+    if @shipment.length >1
+      console.log "WOE!!!"
+      debugger
     return stuff
     
    inspect: ()=>
+     console.log "Looking at -",@toDoList[@toDoList.length]
      return @toDoList.pop()
      
    reinspect: (stuff)=>
