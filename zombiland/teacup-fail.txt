@@ -18,7 +18,7 @@ March Teacup Element {
   tagName: 
    { [Function: DivDad]
      __super__: Component { constructor: [Object], render: [Function] } },
-  attrs: {},
+  attrs: {}, !!! JAH ATTRS IS AN EMPTY oBJECT THAT SOMEHOW IS NOT THE SAME AS EMPTY
   _Halvalla: { tagName: 'divDad', propertyName: 'attrs', children: undefined } }
 Looking at - undefined
 March Teacup DivDad {
@@ -68,7 +68,7 @@ Final Render <divDad class><div class="bango">wow</div></divDad>
     1) without decoration
 
 
-  0 passing (21ms)
+  0 passing (26ms)
   1 failing
 
   1) a class enclosed div
