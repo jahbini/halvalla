@@ -16,7 +16,7 @@ shipping { tag:
   events: undefined,
   instance: undefined,
   skip: false,
-  _Halvalla: {} }
+  _Halvalla: {} }   !!!JAH Halvalla not initialized??
 output length 0
 Looking at - undefined
 shipping { tag: 
@@ -67,9 +67,9 @@ March Teacup { tag:
     }
       at Teacup.module.exports.Teacup.march (lib/teacup.js:57:21)
       at Teacup.module.exports.Teacup.render (lib/teacup.js:69:12)
-      at lib/halvalla.js:574:31
-      at Halvalla.render (lib/halvalla.js:577:9)
-      at allTags.(anonymous function).bound.(anonymous function) (lib/halvalla.js:596:34)
+      at lib/halvalla.js:579:31
+      at Halvalla.render (lib/halvalla.js:582:9)
+      at allTags.(anonymous function).bound.(anonymous function) (lib/halvalla.js:601:34)
       at Context.<anonymous> (test/abc.js:35:21)
   
 

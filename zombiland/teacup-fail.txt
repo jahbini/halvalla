@@ -53,7 +53,7 @@ March Teacup DivDad {
      children: [Function],
      tagname: 'divDad' } }
 Teacup::tag Typeof props to render object
-Teacup::tag early result <divDad class>
+Teacup::tag early result <divDad>
 Looking at - undefined
 March Teacup function (){ return fn.apply(me, arguments); }
 Looking at - undefined
@@ -97,24 +97,13 @@ shipping <div class="bango">wow</div>
 output length 0
 Looking at - undefined
 Final Render <div class="bango">wow</div>
-Teacup::tag final result <divDad class><div class="bango">wow</div></divDad>
-shipping <divDad class><div class="bango">wow</div></divDad>
+Teacup::tag final result <divDad><div class="bango">wow</div></divDad>
+shipping <divDad><div class="bango">wow</div></divDad>
 output length 0
 Looking at - undefined
-Final Render <divDad class><div class="bango">wow</div></divDad>
-    1) without decoration
+Final Render <divDad><div class="bango">wow</div></divDad>
+    ✓ without decoration
 
 
-  0 passing (23ms)
-  1 failing
-
-  1) a class enclosed div
-       without decoration:
-     Error: expected '<divDad class><div class="bango">wow</div></divDad>' to equal '<div class="bango">wow</div>'
-      at Assertion.assert (node_modules/expect.js/index.js:96:13)
-      at Assertion.be.Assertion.equal (node_modules/expect.js/index.js:216:10)
-      at Context.<anonymous> (test/abc.js:35:42)
-  
-
-
+  1 passing (23ms)
 
