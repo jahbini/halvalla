@@ -1,7 +1,7 @@
 ###
 # Halvalla -- bindings for element creation and expression via teact and teacup
 ###
-
+nameMine = require '../lib/name-mine'
 ###
 # The oracle, a globally supplied object to this module has this signature
 Examples of oracle -- the default is to do Teacup to HTML
@@ -64,6 +64,7 @@ class Halvalla
         @[propertyName] = properties unless @[propertyName]
         @children = @render
         @_Halvalla =
+          birthName: 'Bishop '+nameMine.getName()
           propertyName:propertyName
           children:@render
           tagname: tagName[0].toLowerCase()+tagName.slice 1
@@ -83,7 +84,7 @@ class Halvalla
           name = tagName.name
         else name = tagName
         @_Halvalla =
-         
+          birthName: 'Acolyte '+nameMine.getName()
           tagName: name[0].toLowerCase()+name.slice 1
           propertyName:propertyName
           children:@[propertyName].children
@@ -145,7 +146,6 @@ class Halvalla
   bless: (component,itsName=null)->
     component = component.default if component.__esModule && component.default
     name = itsName || component.name
-    name = name[0].toLowerCase()+name.slice 1
     allTags[name]= Halvalla::[name] = (args...) => @crel component, args...
 
   renderContents: (contents, rest...) ->
@@ -194,8 +194,29 @@ class Halvalla
         contents
       else
         []
-    el = oracle.createElement tagName, attrs, children...
-    el._Halvalla= {} unless el._Halvalla
+    if typeof tagName != 'function'
+      name = tagName
+      el = oracle.createElement tagName, attrs, children...
+    else
+      tagConstructor=tagName
+      name = tagName.name
+      tagName= name[0].toLowerCase()+name.slice 1
+      console.log "Activvating NEW"
+      unless Halvalla::[tagName]  #generate alias for stack dumps
+        Halvalla::[tagName]= (component, args...) -> @crel tagName,component,args...
+      if oracle.preInstantiate  # mithril specific Component instantiation done here
+        el1 = new tagConstructor tagName
+        #attrs._Halvalla= el1._Halvalla ## promote for mithril
+        el = oracle.createElement el1,attrs,null # no children until 'view'ed 
+      else 
+        name = tagName
+        el = oracle.createElement tagName, attrs, children...
+    el._Halvalla= {
+          birthName: 'Supplicant '+nameMine.getName()
+          tagName: tagName
+          propertyName: oracle.propertyName,
+          children: oracle.getChildren el
+    } unless el._Halvalla
     @bagMan.shipOut el
     return el
 
@@ -289,7 +310,8 @@ class Halvalla
   #liftedd from teacup renderer.  This side only does the instantiation
   march: (bag)->
     while component = bag.inspect()
-      #console.log "March - to component",component
+      console.log "March - to component",component
+      console.log "Constructor name",component.constructor.name
       switch n=component.constructor.name
         when 'Function'
           y=bag.harvest()
@@ -310,7 +332,7 @@ class Halvalla
         when  n[0].toLowerCase()+n.slice 1 then bag.shipOut component
         else
           tagName = oracle.getName component
-          #console.log 'Tagname of March component type object',tagName
+          console.log 'Tagname of March component type object',tagName
           if 'string'== typeof tagName
             bag.shipOut component
             break

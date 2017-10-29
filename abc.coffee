@@ -1,9 +1,9 @@
 expect = require 'expect.js'
-{tag,h2,Component,bless, p,use, div,text, script, span,render,renderable,bless} = require '../lib/halvalla'
+{tag,h2,Component,bless, p,use, div,text, script, span,render,renderable,bless} = require '../lib/halvalla-mithril'
 
 
 divDad = bless class DivDad extends Component
-  render:()=>
+  view:()=>
     div '.bango',"wow"
   
 describe 'a class enclosed div', ->
@@ -11,8 +11,7 @@ describe 'a class enclosed div', ->
     template = ->
       divDad
     debugger
-    expect(render template).to.equal '<div class="bango">wow</div>'   
-return
+    expect(render template).to.equal '<divDad><div class="bango">wow</div></divDad>'   
 
 describe 'classes', ->
   it 'with text children', ->

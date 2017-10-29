@@ -6,7 +6,7 @@ module.exports = Teacup = class Teacup
 
   march: (bag)->
     while component = bag.inspect()
-      console.log "March Teacup",component
+      console.log "March Teacup",component._Halvalla?.birthName || component.toString()
       switch n=component.constructor.name
         when 'Function' then bag.reinspect @instantiator component
         when 'String','Number' then bag.shipOut component.toString()
@@ -31,8 +31,9 @@ module.exports = Teacup = class Teacup
           if @[tagName]
             bag.shipOut @[tagName] component
           else
-            throw new Error "Component without teacup renderer: #{tagName}"
-            #bag.shipOut @instantiator component    
+            console.log "Component without teacup renderer: #{tagName}"
+            y= @tag component
+            bag.shipOut y
     return null          
 
 
@@ -112,13 +113,16 @@ module.exports = Teacup = class Teacup
     console.log "Teacup::tag Typeof props to render", typeof props
     tagName=@oracle.getName cell
     result = ''
-    debugger
     result += "<#{tagName}#{@renderAttrs props}>" unless tagName == 'text'
     console.log "Teacup::tag early result", result
     if cell.text
       result += cell.text
     if props?.dangerouslySetInnerHTML
       result += props.dangerouslySetInnerHTML.__html
+    else if cell.tag.view 
+      debugger
+      x= cell.tag.view()
+      result += @render x
     else
       result += @render children
     result += "</#{tagName}>" unless tagName == 'text'

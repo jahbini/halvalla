@@ -39,6 +39,16 @@ elements =
 
   obsolete_void: 'basefont frame'
 
+nickName= (thing)->
+  if !thing
+    return "All Done! We close bag now\n" 
+  if thing._Halvalla
+    return thing._Halvalla.birthName
+  if thing.props?._Halvalla
+    return thing.props?._Halvalla.birthName
+  if thing.name && thing.name != ""
+    return "some function maybe "+thing.name
+  return "some anonymous bozo "+thing.toString()
 normalizeArray= (b)->
   #turn b to an array of non-empty elements. useful for makin/g all children
   # look uniform as an array for subsequent iteration
@@ -73,19 +83,17 @@ BagMan = class BagMan
     cleanStuff = normalizeArray stuff
     for eachItem in cleanStuff
       @shipment.push eachItem
-    if @shipment.length >1
-      console.log "WOE!!!"
-      debugger
     return stuff
     
    inspect: ()=>
-     console.log "Looking at -",@toDoList[@toDoList.length]
+     console.log "Looking at -", nickName @toDoList[@toDoList.length-1]
      return @toDoList.pop()
      
    reinspect: (stuff)=>
-    #console.log "reinspect",stuff
+    console.log "reinspect",nickName stuff
     newStuff = normalizeArray stuff
     for eachItem in newStuff by -1
+      console.log "reinspect",nickName eachItem
       # force the caller to make primitive types into objects
       # that way each item will have a constructor and a constructor name
       throw new Error 'illegal input in instantiation bag #{eachItem}'  if 'object' != typeof eachItem
