@@ -119,7 +119,7 @@ module.exports = Teacup = class Teacup
       result += cell.text
     if props?.dangerouslySetInnerHTML
       result += props.dangerouslySetInnerHTML.__html
-    else if cell.tag.view 
+    else if cell.tag?.view 
       debugger
       x= cell.tag.view()
       result += @render x

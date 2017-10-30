@@ -79,6 +79,8 @@ class Halvalla
         super properties,@children...
         @tagName=tagName
         @[propertyName]=properties
+        if propertyName == 'attr'
+          @props = properties
         @children = @children[0] if @children.length ==1
         if typeof tagName == 'function'
           name = tagName.name
@@ -130,6 +132,8 @@ class Halvalla
     return @bagMan.shipOut el
 
   doctype: (type=5) ->
+    console.log "doctype request #{type}"
+    console.log "and it is... ",doctypes
     @raw doctypes[type]
 
   ie: (condition,contents)->
@@ -301,7 +305,8 @@ class Halvalla
 
   renderable: (stuff)->
     return (args...) =>
-      oracle.conjurer @render stuff, args...
+      console.log "RENDERABLE Called ", args...
+      @create stuff args...
   #
   # rendering
   cede: (args...)->
