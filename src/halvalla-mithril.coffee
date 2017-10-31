@@ -17,7 +17,7 @@ Oracle =
   getChildren: (element)->element.children
   getProp: (element)->element.attrs  # where does mithril stash this info?
   propertyName: 'attrs'
-  getName: (element)->element._Halvalla?.tagName|| element.tagName || element.name
+  getName: (element)->element._Halvalla?.tagName|| element.tagName || element.tag
   trust: (text)-> Mithril.trust text # how to specify unescaped text
 
 #require the Halvalla engine, but throw away it's default Oracle's tags

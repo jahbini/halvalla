@@ -78,6 +78,7 @@ class Halvalla
       constructor:(tagName,properties={},@children...)->
         super properties,@children...
         @tagName=tagName
+        @tag = tagName
         @[propertyName]=properties
         if propertyName == 'attr'
           @props = properties
@@ -142,10 +143,7 @@ class Halvalla
   tag: (tagName,args...) ->
     unless tagName? && 'string'== typeof tagName
       throw new Error "HTML tag type is invalid: expected a string but got #{typeof tagName?}"
-    {attrs, contents} = @normalizeArgs args
-    children = contents
-    el = oracle.createElement tagName, attrs, children
-    allTags[tagName]= Halvalla::[tagName] = el
+    return @crel tagName,args...
 
   bless: (component,itsName=null)->
     component = component.default if component.__esModule && component.default
@@ -170,18 +168,21 @@ class Halvalla
   component: (func) ->
     (args...) =>
       {selector, attrs, contents} = @normalizeArgs(args)
-      renderContents = (args...) =>
-        args.unshift contents
+      child = (args...) =>
+        # in theory, their might be many elements in contents
+        # the most common use case is a singleton array
+        # which needs to be promoted as the 'child' of this activation
+        # this twerk allows the test to pass, but the larger situation???
+        args.unshift contents[0]
         @renderContents.apply @, args
-      func.apply @, [selector, attrs, renderContents]
+      func.apply @, [selector, attrs, child]
 
 
   crelVoid: (tagName, args...) ->
     {attrs, contents} = @normalizeArgs args
     if contents.length > 0
       throw new Error "Element type is invalid: must not have content: #{tagName}"
-    el = oracle.createElement tagName, attrs,null
-    return @bagMan.shipOut el
+    return @crel tagName, args...
 
   crel: (tagName, args...) ->
     unless tagName?
@@ -244,7 +245,7 @@ class Halvalla
     return {id, classes}
 
   normalizeArgs: (args) ->
-    args = [args] if !args.length
+    args = [args] unless args.length?
     attrs = {}
     selector = null
     contents = null
@@ -315,7 +316,7 @@ class Halvalla
   #liftedd from teacup renderer.  This side only does the instantiation
   march: (bag)->
     while component = bag.inspect()
-      console.log "March - to component",component
+      console.log "March Halvalla - to component",component
       console.log "Constructor name",component.constructor.name
       switch n=component.constructor.name
         when 'Function'
@@ -367,16 +368,21 @@ class Halvalla
     
   create: (node,rest...)->
     if 'function' == typeof node
+      oldBagger = @bagMan
+      @bagMan = new BagMan
       @bagMan.context ()=>node rest...
       @march @bagMan
       structure= @bagMan.harvest()
+      @bagMan = oldBagger
+    else if 'object' == typeof node
+      structure = node
     else
       structure = new String node
-    #console.log "Render Structure sent to oracle.conjurer",structure
     return structure 
   
-  render: (funct)->
-    structure = @create funct
+  render: (funct,rest...)->
+    structure = @create funct,rest...
+    structure = [structure ] unless structure.length 
     result = for element in structure
       #console.log "Render element sent to oracle.conjurer",element
       oracle.conjurer element

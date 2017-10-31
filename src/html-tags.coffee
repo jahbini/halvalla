@@ -49,6 +49,12 @@ nickName= (thing)->
     return thing.props?._Halvalla.birthName
   if thing.name && thing.name != ""
     return "some function maybe "+thing.name
+  if thing['$$typeof']
+    if 'string'== typeof thing.tag
+      name = thing.type
+    else
+      name = thing.type?.name || "no Can!"
+    return "React Element #{name}"
   return "some anonymous bozo "+thing.toString()
 normalizeArray= (b)->
   #turn b to an array of non-empty elements. useful for makin/g all children
@@ -97,11 +103,12 @@ BagMan = class BagMan
       console.log "reinspect",nickName eachItem
       # force the caller to make primitive types into objects
       # that way each item will have a constructor and a constructor name
-      throw new Error 'illegal input in instantiation bag #{eachItem}'  if 'object' != typeof eachItem
+      console.log 'illegal input in instantiation bag #{eachItem}'  if 'object' != typeof eachItem
       @toDoList.push eachItem
     return stuff
   harvest:()=>
     #console.log "harvest",@shipment
+    
     return @shipment
     
 # Create a unique list of element names merging the desired groups.

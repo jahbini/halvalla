@@ -13,26 +13,31 @@ module.exports = Teacup = class Teacup
         when 'Array' then throw new Error 'invalid array from bagman'
         #render the node and append it to the htmlOout string
         else 
-          throw new Error "unclean component",component unless component._Halvalla
+          #throw new Error "unclean component",component unless component._Halvalla
           tagName=@oracle.getName component
-          if 'function' == typeof component.tagName
-              #this component has not been instantiated yet
-              tagConstructor = component.tagName
-              if component.attrs
-                attrs = component.attrs
-              else
-                attrs = component.props
-              node = new tagConstructor tagName,attrs,component.children
-              #console.log "newly instantiated node",node
-              unless Teacup::[tagName]  #generate alias for stack dumps
-                Teacup::[tagName]= (component, args...) -> @tag component,args...
-              bag.reinspect node
-              break
+          if component.tag == '<'
+            bag.shipOut @rawMithril component
+          else if 'function' == typeof component.tagName
+            #this component has not been instantiated yet
+            tagConstructor = component.tagName
+            if component.attrs
+              attrs = component.attrs
+            else
+              attrs = component.props
+            node = new tagConstructor tagName,attrs,component.children
+            #console.log "newly instantiated node",node
+            unless Teacup::[tagName]  #generate alias for stack dumps
+              Teacup::[tagName]= (component, args...) -> @view component,args...
+            bag.shipOut @view node
+            break
           if @[tagName]
             bag.shipOut @[tagName] component
           else
             console.log "Component without teacup renderer: #{tagName}"
-            y= @tag component
+            if 'string' == typeof component.tag
+              y= @tag component
+            else 
+              y= @view component
             bag.shipOut y
     return null          
 
@@ -106,6 +111,18 @@ module.exports = Teacup = class Teacup
     else
       @textOnly contents
 
+  view: (cell) ->
+    {children} = cell
+    #console.log "VIEW",cell
+    props=@oracle.getProp cell
+    console.log "Teacup::tag Typeof props to render", typeof props
+    result = ''
+    if cell.tag?.view 
+      x= cell.tag.view()
+      result += @render x
+    console.log "Teacup::view final result", result
+    return result
+
   tag: (cell) ->
     {children} = cell
     #console.log "CELL!",cell
@@ -119,15 +136,18 @@ module.exports = Teacup = class Teacup
       result += cell.text
     if props?.dangerouslySetInnerHTML
       result += props.dangerouslySetInnerHTML.__html
-    else if cell.tag?.view 
-      debugger
-      x= cell.tag.view()
-      result += @render x
     else
-      result += @render children
+      children = [ children ] if 'String' == children.constructor?.name
+      for child in children
+        if 'String' == child.constructor?.name || 'string' == typeof child
+          result += escape child.toString()
+        else 
+          result += @render child
+        
     result += "</#{tagName}>" unless tagName == 'text'
     console.log "Teacup::tag final result", result
     return result
+
 
   rawMithril:(cell)->
     return cell.children
@@ -175,7 +195,8 @@ module.exports = Teacup = class Teacup
     return doctypes[type]
 
   ie: (cell)->
-    result = "<!--[if #{escape cell.props.condition}]>"
+    props = @oracle.getProp cell
+    result = "<!--[if #{escape props.condition}]>"
     result += @render cell.children
     result += "<![endif]-->"
     return result
@@ -207,6 +228,10 @@ for tagName in mergeElements 'script'
   do (tagName) ->
     Teacup::[tagName] = (args...) -> @scriptTag args...
 
+for tagName in 'ie'
+  do (tagName) ->
+    Teacup::[tagName] = (args...) -> @ie args...
+    
 for tagName in mergeElements 'void', 'obsolete_void'
   do (tagName) ->
     Teacup::[tagName] = (args...) -> @selfClosingTag args...
