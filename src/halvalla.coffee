@@ -68,8 +68,6 @@ class Halvalla
           propertyName:propertyName
           children:@render
           tagname: tagName[0].toLowerCase()+tagName.slice 1
-        console.log "Component construct",@
-        console.log "Component arguments",arguments
         return
 
       render: ->
@@ -91,9 +89,6 @@ class Halvalla
           tagName: name[0].toLowerCase()+name.slice 1
           propertyName:propertyName
           children:@[propertyName].children
-        console.log "Element construct",@
-        console.log "Element attrs should be object, typeof this.attrs = ",typeof @.attrs
-        console.log "Element arguments",arguments
         return
         
       view: ->
@@ -119,8 +114,6 @@ class Halvalla
       @bagMan.context []
       @bagMan.shipOut contents.apply @, arguments
       stackHad=@bagMan.harvest()
-      #console.log "Pure ", st
-      #console.log "WAS ",previous
       return stackHad
 
   raw: (text)->
@@ -133,8 +126,6 @@ class Halvalla
     return @bagMan.shipOut el
 
   doctype: (type=5) ->
-    console.log "doctype request #{type}"
-    console.log "and it is... ",doctypes
     @raw doctypes[type]
 
   ie: (condition,contents)->
@@ -195,7 +186,6 @@ class Halvalla
         @march @bagMan
         contents = @bagMan.harvest()
         @bagMan = oldBagger
-        #console.log "Children",contents
         contents
       else
         []
@@ -206,7 +196,6 @@ class Halvalla
       tagConstructor=tagName
       name = tagName.name
       tagName= name[0].toLowerCase()+name.slice 1
-      console.log "Activvating NEW"
       unless Halvalla::[tagName]  #generate alias for stack dumps
         Halvalla::[tagName]= (component, args...) -> @crel tagName,component,args...
       if oracle.preInstantiate  # mithril specific Component instantiation done here
@@ -306,7 +295,6 @@ class Halvalla
 
   renderable: (stuff)->
     return (args...) =>
-      console.log "RENDERABLE Called ", args...
       @create stuff args...
   #
   # rendering
@@ -316,8 +304,6 @@ class Halvalla
   #liftedd from teacup renderer.  This side only does the instantiation
   march: (bag)->
     while component = bag.inspect()
-      console.log "March Halvalla - to component",component
-      console.log "Constructor name",component.constructor.name
       switch n=component.constructor.name
         when 'Function'
           y=bag.harvest()
@@ -338,7 +324,6 @@ class Halvalla
         when  n[0].toLowerCase()+n.slice 1 then bag.shipOut component
         else
           tagName = oracle.getName component
-          console.log 'Tagname of March component type object',tagName
           if 'string'== typeof tagName
             bag.shipOut component
             break
@@ -352,13 +337,10 @@ class Halvalla
             else
               attrs = component.props
             if tagName[0] != tagNameLC[0]
-              #console.log "Activvating NEW"
               unless Halvalla::[tagNameLC]  #generate alias for stack dumps
                 Halvalla::[tagNameLC]= (component, args...) -> @crel tagNameLC,component,args...
               #crell = new tagConstructor tagNameLC,attrs,component.children
-              #console.log "calling crel A", crell
               crellB = @[tagNameLC] attrs,oracle.getChildren component
-              #console.log "calling crel B", crellB
               bag.shipOut crellB
               break
             else
@@ -384,9 +366,7 @@ class Halvalla
     structure = @create funct,rest...
     structure = [structure ] unless structure.length 
     result = for element in structure
-      #console.log "Render element sent to oracle.conjurer",element
       oracle.conjurer element
-    #console.log "And it ends with a caboom",result
     return result.join ''
   #
   # Binding

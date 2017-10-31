@@ -1,0 +1,485 @@
+
+> halvalla@0.10.1 pretest /home/ubuntu/workspace
+> npm run compile
+
+
+> halvalla@0.10.1 compile /home/ubuntu/workspace
+> coffee --compile --output lib/ src/
+
+
+> halvalla@0.10.1 test /home/ubuntu/workspace
+> npm run test-mithril; npm run test-react; npm run test-teacup; rm test
+
+
+> halvalla@0.10.1 test-mithril /home/ubuntu/workspace
+> rm test; ln -s test-mithril test; mocha
+
+
+
+  a class enclosed div
+    ✓ without decoration
+
+  classes
+    ✓ with text children
+
+  a simple div
+    ✓ simple div without decoration
+
+  multiple tags
+    ✓ with multiple text children
+
+  multiple tags
+    ✓ with text children
+
+  Attributes
+    with a hash
+      ✓ renders the corresponding HTML attributes
+    Boolean true value
+      ✓ is replaced with the attribute name.  Useful for attributes like disabled
+    Boolean false value
+      ✓ is omitted
+    null and undefined value
+      ✓ renders just the attribute name
+    string value
+      ✓ is used verbatim
+    number value
+      ✓ is stringified
+    array value
+      ✓ is comma separated
+    data attribute
+      ✓ expands attributes
+    nested hyphenated attribute
+      ✓ renders
+
+  coffeekup.org example
+    ✓ works
+
+  Comments
+    ✓ renders HTML <!--comments-->
+
+  CSS Selectors
+    id selector
+      ✓ sets the id attribute
+      ✓ must be greater than length 1
+    one class selector
+      ✓ adds an html class
+      and a class attribute
+        ✓ prepends the selector class
+    multi-class selector
+      ✓ adds all the classes
+    with an id and classes, separated by spaces
+      ✓ adds ids and classes with minimal whitespace
+    without contents
+      ✓ still adds attributes
+
+  custom tag
+    ✓ should render
+    ✓ should render empty given null content
+    ✓ should render with attributes
+    ✓ should render with attributes and content
+
+  custom tag-like
+    ✓ should render
+    ✓ should accept a selector and attributes
+
+  doctype
+    ✓ default should render html5 doctype
+    ✓ xml should render xml header
+    ✓ 5 should render html 5 doctype
+    ✓ transitional should render transitional doctype
+
+  HereDocs
+    ✓ preserves line breaks
+
+  IE conditionals
+    ✓ renders conditional comments
+
+  nesting templates
+    ✓ renders nested template in the same output
+
+  plugins
+    ✓ are applied via use
+
+  render
+    ✓ doesn't modify the attributes object
+    nested in a template
+      ✓ returns the nested template without clobbering the parent result
+      ✓ is aliased as cede
+
+  Self Closing Tags
+    <img />
+      ✓ should render
+      ✓ should render with attributes
+      ✓ should throw when passed content
+    <br />
+      ✓ should render
+    <link />
+      ✓ should render with attributes
+
+  stack trace
+    ✓ should contain tag names
+
+  tag
+    ✓ renders Dates
+    ✓ renders text verbatim
+    ✓ renders numbers
+    ✓ renders undefined as ''
+    ✓ renders empty tags
+
+  text
+    ✓ renders text verbatim
+    ✓ renders numbers
+    ✓ is assumed when it is returned from contents
+
+  Context data
+    ✓ is an argument to the template function
+
+  Local vars
+    ✓ are in the template function closure
+
+
+  56 passing (104ms)
+
+
+> halvalla@0.10.1 test-react /home/ubuntu/workspace
+> rm test; ln -s test-react test; mocha
+
+
+
+  Attributes
+    with a hash
+      ✓ renders the corresponding HTML attributes
+    data attribute
+      ✓ expands attributes
+    nested hyphenated attribute
+      ✓ renders
+
+  coffeekup.org example
+    ✓ works
+
+  components with child
+    1) renders child with dooDad
+
+  components
+    2) render with dooDad
+
+  use of render in classes
+    3) supports a single child
+
+  nesting components
+    4) supports a multipl children
+
+  render
+    ✓ renders text verbatim
+    ✓ renders numbers
+    ✓ renders undefined as ''
+    ✓ renders empty tags
+    5) renders text tags as strings
+    6) throws on undefined element types
+
+  CSS Selectors
+    id selector
+      ✓ sets the id attribute
+      ✓ must be greater than length 1
+    one class selector
+      ✓ adds an html class
+      and a class attribute
+        ✓ prepends the selector class
+    multi-class selector
+      ✓ adds all the classes
+    with an id and classes, separated by spaces
+      ✓ adds ids and classes with minimal whitespace
+    without contents
+      ✓ still adds attributes
+
+  custom tag
+    ✓ should render
+    ✓ should render empty given null content
+    ✓ should render with attributes
+    ✓ should render with attributes and content
+
+  Auto escaping
+    ✓ escapes crel attributes
+    ✓ escapea single quotes in crel attributes
+    a script crel
+      ✓ adds HTML entities for sensitive characters
+
+  script crel
+    ✓ escapes /
+
+  HereDocs
+    ✓ preserves line breaks
+
+  nesting templates
+    ✓ renders nested template in the same output
+    pureComponent
+      7) returns components without adding them to the parent stack
+
+  plugins
+    ✓ are applied via use
+
+  render
+    8) doesn't modify the attributes object
+    nested in a template
+      ✓ returns the nested template without clobbering the parent result
+
+  Self Closing Tags
+    <img/>
+      ✓ should render
+      ✓ should render with attributes
+      ✓ should throw when passed content
+    <br/>
+      ✓ should render
+    <link/>
+      ✓ should render with attributes
+
+  stack trace
+    ✓ should contain crel names
+
+  text
+    9) renders text verbatim
+    10) renders numbers
+
+  Context data
+    ✓ is an argument to the template function
+
+  Local vars
+    ✓ are in the template function closure
+
+
+  35 passing (147ms)
+  10 failing
+
+  1) components with child
+       renders child with dooDad:
+     Error: expected '<dooDad label="Boo"><div class="aclass">some text</div></dooDad>' to equal '<div class="doodad">Boo<div class="aclass">some text</div><span>some last text</span></div>'
+      at Assertion.assert (node_modules/expect.js/index.js:96:13)
+      at Assertion.be.Assertion.equal (node_modules/expect.js/index.js:216:10)
+      at Context.<anonymous> (test-react/components.coffee:31:22)
+  
+
+  2) components
+       render with dooDad:
+     Error: expected '<dooDad label="Label text."><span>A single text child</span></dooDad>' to equal '<div class="doodad">Label text.<span>A single text child</span><span>some last text</span></div>'
+      at Assertion.assert (node_modules/expect.js/index.js:96:13)
+      at Assertion.be.Assertion.equal (node_modules/expect.js/index.js:216:10)
+      at Context.<anonymous> (test-react/components.coffee:38:22)
+  
+
+  3) use of render in classes
+       supports a single child:
+     Error: expected '<widget></widget>' to equal '<div class="foo"><div class="doodad">Doo<span>I&#x27;m passed to DooDad.props.children</span><span>some last text</span></div></div>'
+      at Assertion.assert (node_modules/expect.js/index.js:96:13)
+      at Assertion.be.Assertion.equal (node_modules/expect.js/index.js:216:10)
+      at Context.<anonymous> (test-react/components.coffee:44:10)
+  
+
+  4) nesting components
+       supports a multipl children:
+     Error: expected '<dooDad label="A"><dooDad label="B"></dooDad><dooDad label="C"></dooDad></dooDad>' to equal '<div class="doodad">A<div class="doodad">C<span>some last text</span></div><span>some last text</span></div>'
+      at Assertion.assert (node_modules/expect.js/index.js:96:13)
+      at Assertion.be.Assertion.equal (node_modules/expect.js/index.js:216:10)
+      at Context.<anonymous> (test-react/components.coffee:52:10)
+  
+
+  5) render
+       renders text tags as strings:
+     TypeError: tag.text is not a function
+      at test-react/crel.coffee:21:26
+      at lib/halvalla.js:586:25
+      at Halvalla.march (lib/halvalla.js:522:17)
+      at Halvalla.create (lib/halvalla.js:589:14)
+      at Halvalla.render (lib/halvalla.js:603:31)
+      at allTags.(anonymous function).bound.(anonymous function) (lib/halvalla.js:634:34)
+      at Context.<anonymous> (test-react/crel.coffee:21:12)
+  
+
+  6) render
+       throws on undefined element types:
+     Error: expected 'HTML tag type is invalid: expected a string but got boolean' to match /got: undefined/
+      at Assertion.assert (node_modules/expect.js/index.js:96:13)
+      at Assertion.match (node_modules/expect.js/index.js:328:10)
+      at Assertion.throwError.Assertion.throwException (node_modules/expect.js/index.js:156:30)
+      at Context.<anonymous> (test-react/crel.coffee:24:51)
+  
+
+  7) nesting templates
+       pureComponent
+         returns components without adding them to the parent stack:
+     Error: expected '<span>Huevo</span><span>Bueno</span><span>Bueno</span><span>Huevo</span><div>[object Object],[object Object],[object Object],[object Object]</div>' to equal '<div><span>Bueno</span><span>Huevo</span></div>'
+      at Assertion.assert (node_modules/expect.js/index.js:96:13)
+      at Assertion.be.Assertion.equal (node_modules/expect.js/index.js:216:10)
+      at Context.<anonymous> (test-react/nesting.coffee:33:40)
+  
+
+  8) render
+       doesn't modify the attributes object:
+     Error: expected '<p><a id="foobar" href="http://example.com" class="first">link 1</a><a id="foobar" href="http://example.com">link 2</a></p>' to equal '<p><a id="foobar" class="first" href="http://example.com">link 1</a><a id="foobar" href="http://example.com">link 2</a></p>'
+      at Assertion.assert (node_modules/expect.js/index.js:96:13)
+      at Assertion.be.Assertion.equal (node_modules/expect.js/index.js:216:10)
+      at Context.<anonymous> (test-react/render.coffee:18:32)
+  
+
+  9) text
+       renders text verbatim:
+     Invariant Violation: renderToStaticMarkup(): You must pass a valid ReactElement.
+      at invariant (node_modules/fbjs/lib/invariant.js:42:15)
+      at GreatEmptiness.renderToStaticMarkup [as conjurer] (node_modules/react-dom/lib/ReactServerRendering.js:82:76)
+      at lib/halvalla.js:612:31
+      at Halvalla.render (lib/halvalla.js:615:9)
+      at allTags.(anonymous function).bound.(anonymous function) (lib/halvalla.js:634:34)
+      at Context.<anonymous> (test-react/text.coffee:7:12)
+  
+
+  10) text
+       renders numbers:
+     Invariant Violation: renderToStaticMarkup(): You must pass a valid ReactElement.
+      at invariant (node_modules/fbjs/lib/invariant.js:42:15)
+      at GreatEmptiness.renderToStaticMarkup [as conjurer] (node_modules/react-dom/lib/ReactServerRendering.js:82:76)
+      at lib/halvalla.js:612:31
+      at Halvalla.render (lib/halvalla.js:615:9)
+      at allTags.(anonymous function).bound.(anonymous function) (lib/halvalla.js:634:34)
+      at Context.<anonymous> (test-react/text.coffee:12:12)
+  
+
+
+
+
+> halvalla@0.10.1 test-teacup /home/ubuntu/workspace
+> rm test; ln -s test-teacup test; mocha
+
+
+
+  Attributes
+    with a hash
+      ✓ renders the corresponding HTML attributes
+    Boolean true value
+      ✓ is replaced with the attribute name.  Useful for attributes like disabled
+    Boolean false value
+      ✓ is omitted
+    null and undefined value
+      ✓ renders just the attribute name
+    string value
+      ✓ is used verbatim
+    number value
+      ✓ is stringified
+    array value
+      ✓ is comma separated
+    data attribute
+      ✓ expands attributes
+    nested hyphenated attribute
+      ✓ renders
+
+  coffeekup.org example
+    ✓ works
+
+  Comments
+    ✓ renders HTML <!--comments-->
+
+  Component
+    ✓ takes arguments
+    ✓ passes along the selector
+    ✓ passes along child content
+    ✓ lets components provide give contents to their children
+
+  CSS Selectors
+    id selector
+      ✓ sets the id attribute
+      ✓ must be greater than length 1
+    one class selector
+      ✓ adds an html class
+      and a class attribute
+        ✓ prepends the selector class
+    multi-class selector
+      ✓ adds all the classes
+    with an id and classes, separated by spaces
+      ✓ adds ids and classes with minimal whitespace
+    without contents
+      ✓ still adds attributes
+
+  custom tag
+    ✓ should render
+    ✓ should render empty given null content
+    ✓ should render with attributes
+    ✓ should render with attributes and content
+
+  custom tag-like
+    ✓ should render
+    ✓ should accept a selector and attributes
+
+  doctype
+    ✓ default should render html5 doctype
+    ✓ xml should render xml header
+    ✓ 5 should render html 5 doctype
+    ✓ transitional should render transitional doctype
+
+  Auto escaping
+    ✓ escapes tag attributes
+    ✓ does not escape single quotes in tag attributes
+    a script tag
+      ✓ adds HTML entities for sensitive characters
+
+  raw filter
+    ✓ prints sensitive characters verbatim
+    combined with the escape filter
+      ✓ gives the author granular control of escaping
+
+  script tag
+    ✓ escapes /
+
+  HereDocs
+    ✓ preserves line breaks
+
+  IE conditionals
+    ✓ renders conditional comments
+
+  nesting templates
+    ✓ renders nested template in the same output
+
+  plugins
+    ✓ are applied via use
+
+  render
+    ✓ doesn't modify the attributes object
+    nested in a template
+      ✓ returns the nested template without clobbering the parent result
+      ✓ is aliased as cede
+
+  renderable decorator
+    ✓ makes a template directly callable
+    ✓ supports composition with renderable and non-renderable helpers
+
+  Self Closing Tags
+    <img />
+      ✓ should render
+      ✓ should render with attributes
+      ✓ should throw when passed content
+    <br />
+      ✓ should render
+    <link />
+      ✓ should render with attributes
+
+  stack trace
+    ✓ should contain tag names
+
+  tag
+    ✓ renders Dates
+    ✓ renders text verbatim
+    ✓ renders numbers
+    ✓ renders undefined as ''
+    ✓ renders empty tags
+
+  text
+    ✓ renders text verbatim
+    ✓ renders numbers
+    ✓ is assumed when it is returned from contents
+
+  Context data
+    ✓ is an argument to the template function
+
+  Local vars
+    ✓ are in the template function closure
+
+
+  63 passing (121ms)
+

@@ -74,7 +74,6 @@ BagMan = class BagMan
     return
     
   context: (inputStuff...)->
-    #console.log inputStuff
     @lastShipment = null
     a=normalizeArray inputStuff...
     @toDoList=a.reverse()
@@ -84,8 +83,6 @@ BagMan = class BagMan
   shipOut: (stuff)=>
     return stuff unless @shipment
     return stuff if stuff == @lastShipment
-    console.log "shipping",stuff
-    console.log "output length",@shipment.length
     @lastShipment = stuff
     cleanStuff = normalizeArray stuff
     for eachItem in cleanStuff
@@ -93,21 +90,16 @@ BagMan = class BagMan
     return stuff
     
    inspect: ()=>
-     console.log "Looking at -", nickName @toDoList[@toDoList.length-1]
      return @toDoList.pop()
      
    reinspect: (stuff)=>
-    console.log "reinspect",nickName stuff
     newStuff = normalizeArray stuff
     for eachItem in newStuff by -1
-      console.log "reinspect",nickName eachItem
       # force the caller to make primitive types into objects
       # that way each item will have a constructor and a constructor name
-      console.log 'illegal input in instantiation bag #{eachItem}'  if 'object' != typeof eachItem
       @toDoList.push eachItem
     return stuff
   harvest:()=>
-    #console.log "harvest",@shipment
     
     return @shipment
     
