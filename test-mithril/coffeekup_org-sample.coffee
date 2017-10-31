@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{renderable, doctype, html, head, meta, link, style, title, script, body,
+{renderable, render, doctype, html, head, meta, link, style, title, script, body,
 coffeescript, header, section, nav, footer, h1, h2, ul, li, a, p} = require '../lib/halvalla-mithril'
 
 describe 'coffeekup.org example', ->
@@ -47,4 +47,4 @@ describe 'coffeekup.org example', ->
           footer ->
             p shoutify('bye')
     debugger
-    expect(template()).to.contain 'Just Stuff'
+    expect(render template).to.contain 'Just Stuff'

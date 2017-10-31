@@ -3,11 +3,11 @@ expect = require 'expect.js'
 
 describe 'text', ->
   it 'renders text verbatim', ->
-    expect(renderable(text) 'foobar').to.equal 'foobar'
+    expect(render renderable(text) 'foobar').to.equal 'foobar'
 
   it 'renders numbers', ->
-    expect(renderable(text) 1).to.equal '1'
-    expect(renderable(text) 0).to.equal '0'
+    expect(render renderable(text) 1).to.equal '1'
+    expect(render renderable(text) 0).to.equal '0'
 
   it 'is assumed when it is returned from contents', ->
     template = -> h1 -> 'hello world'

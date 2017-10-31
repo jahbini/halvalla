@@ -5,6 +5,7 @@ describe 'Auto escaping', ->
   describe 'a script tag', ->
     it "adds HTML entities for sensitive characters", ->
       template = -> h1 "<script>alert('\"owned\" by c&a &copy;')</script>"
+      debugger
       expect(render template).to.equal "<h1>&lt;script&gt;alert('&quot;owned&quot; by c&amp;a &amp;copy;')&lt;/script&gt;</h1>"
 
   it 'escapes tag attributes', ->

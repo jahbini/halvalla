@@ -125,7 +125,7 @@ module.exports = Teacup = class Teacup
 
   tag: (cell) ->
     {children} = cell
-    #console.log "CELL!",cell
+    console.log "CELL!",cell
     props=@oracle.getProp cell
     console.log "Teacup::tag Typeof props to render", typeof props
     tagName=@oracle.getName cell
@@ -134,10 +134,10 @@ module.exports = Teacup = class Teacup
     console.log "Teacup::tag early result", result
     if cell.text
       result += cell.text
-    if props?.dangerouslySetInnerHTML
+    else if props?.dangerouslySetInnerHTML
       result += props.dangerouslySetInnerHTML.__html
     else
-      children = [ children ] if 'String' == children.constructor?.name
+      children = [ children ] if 'String' == children.constructor?.name || !children.length
       for child in children
         if 'String' == child.constructor?.name || 'string' == typeof child
           result += escape child.toString()

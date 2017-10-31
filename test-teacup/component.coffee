@@ -30,15 +30,17 @@ describe 'Component', ->
     expect(render template).to.equal '<div class="captioned"><img src="/catalonia/IMG_00182.JPG" /><div class="caption">La Dura Dura</div></div>'
 
   it 'lets components provide give contents to their children', ->
-    modal = component (selector, attrs, renderContents) ->
-      closeButton = ->
-        button 'Close'
-
+    closureCloseButton = ->
+      button 'Close'
+      
+    modal = component (selector, attrs, closeChild) ->
       div '.modal', ->
-        renderContents(closeButton)
+        debugger
+        closeChild(closureCloseButton)
 
     template = ->
       modal (closeButton) ->
+        debugger
         text 'close me: '
         closeButton()
 

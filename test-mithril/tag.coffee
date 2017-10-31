@@ -1,5 +1,9 @@
+###
+Test simple div
+oddly eough this is named tag.coffee
+###
 expect = require 'expect.js'
-{renderable, render, p, div, script} = require '../lib/halvalla'
+{renderable, render, p, div, script} = require '../lib/halvalla-mithril'
 
 describe 'tag', ->
   it 'renders Dates', ->
@@ -11,7 +15,6 @@ describe 'tag', ->
 
   it 'renders numbers', ->
     expect(render renderable(p) 1).to.equal '<p>1</p>'
-    debugger
     expect(render renderable(p) 0).to.equal '<p>0</p>'
 
   it "renders undefined as ''", ->

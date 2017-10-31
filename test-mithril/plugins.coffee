@@ -1,3 +1,7 @@
+###
+plugins for mitril test cases mocha
+###
+
 expect = require 'expect.js'
 teacup = require '../lib/halvalla-mithril'
 

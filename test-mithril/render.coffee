@@ -1,3 +1,6 @@
+###
+render test for mithril mocha style
+###
 expect = require 'expect.js'
 {render, raw, cede, div, p, strong, a} = require '../lib/halvalla-mithril'
 

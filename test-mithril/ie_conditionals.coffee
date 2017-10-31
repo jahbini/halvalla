@@ -1,3 +1,6 @@
+###
+Test Internet Exploder conditional inclusion -- mithril mocha
+###
 expect = require 'expect.js'
 {render, ie, link} = require '../lib/halvalla-mithril'
 

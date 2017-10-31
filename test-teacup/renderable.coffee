@@ -1,5 +1,5 @@
 expect = require 'expect.js'
-{renderable, div, span} = require '../lib/halvalla'
+{renderable,render, div, span} = require '../lib/halvalla'
 
 describe 'renderable decorator', ->
   it 'makes a template directly callable', ->
@@ -7,7 +7,7 @@ describe 'renderable decorator', ->
       for letter in letters
         div letter
 
-    expect(template ['a', 'b', 'c'])
+    expect(render template ['a', 'b', 'c'])
       .to.equal '<div>a</div><div>b</div><div>c</div>'
 
   it 'supports composition with renderable and non-renderable helpers', ->
@@ -22,6 +22,5 @@ describe 'renderable decorator', ->
       div ->
         renderableHelper(user)
         vanillaHelper(user)
-    debugger
-    expect(template first:'Huevo', last:'Bueno')
+    expect(render template first:'Huevo', last:'Bueno')
       .to.equal '<div><span>Huevo</span><span>Bueno</span></div>'

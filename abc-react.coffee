@@ -11,7 +11,15 @@ dooDad = bless class DooDad extends Component
         use (obj)->
           obj.stack.push props.children
       span "some last text"
+describe 'components with child', ->
+  it 'renders child with dooDad', ->
+    bogus=render ->
+      dooDad label: 'Boo',->
+        x=div ".aclass",'some text'
+        return x
+    expect(bogus).to.equal '<div class="doodad">Boo<div class="aclass">some text</div><span>some last text</span></div>'
 
+return
 widget = bless class Widget extends Component
   constructor: (args...)->
     super(args...)
@@ -22,13 +30,6 @@ widget = bless class Widget extends Component
       dooDad label: 'Doo', ->
         span "I'm passed to DooDad.props.children"
 
-describe 'components with child', ->
-  it 'renders child with dooDad', ->
-    bogus=render ->
-      dooDad label: 'Boo',->
-        x=div ".aclass",'some text'
-        return x
-    expect(bogus).to.equal '<div class="doodad">Boo<div class="aclass">some text</div><span>some last text</span></div>'
 
 describe 'components', ->
   it 'render with dooDad', ->

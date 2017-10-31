@@ -1,3 +1,6 @@
+###
+doctype.coffee  mocha test for mithril
+###
 expect = require 'expect.js'
 debugger
 {render, doctype} = require '../lib/halvalla-mithril'

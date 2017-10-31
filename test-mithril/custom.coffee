@@ -1,3 +1,7 @@
+###
+Tag entry point test mithril mocha
+Oddy enough, it is called 'custom'
+###
 expect = require 'expect.js'
 {render, tag, input, normalizeArgs} = require '../lib/halvalla-mithril'
 

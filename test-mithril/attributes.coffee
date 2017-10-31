@@ -1,3 +1,6 @@
+###
+attributes.coffee -- mocha test file
+###
 expect = require 'expect.js'
 {render, a, br, div} = require '../lib/halvalla-mithril'
 
