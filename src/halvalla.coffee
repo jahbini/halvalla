@@ -85,7 +85,7 @@ class Halvalla
           @props = properties
         @children = @children[0] if @children.length ==1
         if typeof tagName == 'object'
-          name = tagName.name || this.constructor.name
+          name = tagName.name || tagName.constructor.name
         else
           name = tagName
         try
