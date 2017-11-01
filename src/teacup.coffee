@@ -76,7 +76,7 @@ module.exports = Teacup = class Teacup
       return ''
 
     if name == 'style' && 'object' == typeof value
-      return " #{name}=#{(@renderAttr n,v for k,v of value).join ' '}" 
+      return " #{name}=#{(@renderAttr k,v for k,v of value).join ' '}" 
       
     if name is 'data' and typeof value is 'object'
       return (@renderAttr "data-#{k}", v for k,v of value).join('')
