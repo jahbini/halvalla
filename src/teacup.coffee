@@ -118,7 +118,7 @@ module.exports = Teacup = class Teacup
     console.log "Teacup::tag Typeof props to render", typeof props
     result = ''
     if cell.tag?.view 
-      x= cell.tag.view()
+      x= cell.tag.view(props)
       result += @render x
     console.log "Teacup::view final result", result
     return result
