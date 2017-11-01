@@ -80,7 +80,8 @@ module.exports = Teacup = class Teacup
 
     if value is true
       value = name
-
+    if name == 'style'
+      return " #{name}=#{quote escape  (value.toString()).replace(/":"/g,':')}"
     return " #{name}=#{quote escape value.toString()}"
 
   attrOrder: ['id', 'class']
