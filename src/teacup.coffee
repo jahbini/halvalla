@@ -166,7 +166,7 @@ module.exports = Teacup = class Teacup
     props=@oracle.getProp cell
     tagName=@oracle.getName cell
     result = "<#{tagName}#{@renderAttrs props}>"
-    result += @renderContents children
+    result += escape @renderContents children
     result += "</#{tagName}>"
     return result
 
