@@ -47,6 +47,7 @@ class Halvalla
           getProp: (element)->element.attrs
           getName: (element)->element.type||element._Halvalla?.tagName|| element.tagName
           propertyName: 'attrs'
+          preInstantiate: true   #needed for mithril, maybe for teacup, react???
           conjurer: null
         # decorate this singleton with
         for key,value of Object.assign defaultObject, Oracle
