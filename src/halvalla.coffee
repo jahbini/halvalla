@@ -86,7 +86,14 @@ class Halvalla
         @children = @children[0] if @children.length ==1
         if typeof tagName == 'function'
           name = tagName.name
-        else name = tagName
+        else
+          name = tagName
+        try
+          name = name[0].toLowerCase()+name.slice 1
+        catch
+          name = "badSeed"
+          console.log "Bad Seed!",@
+          
         @_Halvalla =
           birthName: 'Acolyte '+nameMine.getName()
           tagName: name[0].toLowerCase()+name.slice 1
