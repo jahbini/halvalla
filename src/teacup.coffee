@@ -75,13 +75,15 @@ module.exports = Teacup = class Teacup
     if value is false
       return ''
 
+    if name == 'style' && 'object' == typeof value
+      return " #{name}=#{(@renderAttr n,v for k,v of value).join ' '}" 
+      
     if name is 'data' and typeof value is 'object'
       return (@renderAttr "data-#{k}", v for k,v of value).join('')
 
     if value is true
       value = name
-    if name == 'style'
-      return " #{name}=#{quote escape  (value.toString()).replace(/":"/g,':')}"
+      
     return " #{name}=#{quote escape value.toString()}"
 
   attrOrder: ['id', 'class']
