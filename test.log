@@ -1,17 +1,17 @@
 
-> halvalla@0.10.1 pretest /home/ubuntu/workspace
+> halvalla@0.11.0 pretest /Users/jim/clones/halvalla
 > npm run compile
 
 
-> halvalla@0.10.1 compile /home/ubuntu/workspace
+> halvalla@0.11.0 compile /Users/jim/clones/halvalla
 > coffee --compile --output lib/ src/
 
 
-> halvalla@0.10.1 test /home/ubuntu/workspace
+> halvalla@0.11.0 test /Users/jim/clones/halvalla
 > npm run test-mithril; npm run test-react; npm run test-teacup; rm test
 
 
-> halvalla@0.10.1 test-mithril /home/ubuntu/workspace
+> halvalla@0.11.0 test-mithril /Users/jim/clones/halvalla
 > rm test; ln -s test-mithril test; mocha
 
 
@@ -138,10 +138,10 @@
     ✓ are in the template function closure
 
 
-  56 passing (104ms)
+  56 passing (128ms)
 
 
-> halvalla@0.10.1 test-react /home/ubuntu/workspace
+> halvalla@0.11.0 test-react /Users/jim/clones/halvalla
 > rm test; ln -s test-react test; mocha
 
 
@@ -247,7 +247,7 @@
     ✓ are in the template function closure
 
 
-  35 passing (147ms)
+  35 passing (196ms)
   10 failing
 
   1) components with child
@@ -323,7 +323,7 @@
   9) text
        renders text verbatim:
      Invariant Violation: renderToStaticMarkup(): You must pass a valid ReactElement.
-      at invariant (node_modules/fbjs/lib/invariant.js:42:15)
+      at invariant (node_modules/react-dom/node_modules/fbjs/lib/invariant.js:42:15)
       at GreatEmptiness.renderToStaticMarkup [as conjurer] (node_modules/react-dom/lib/ReactServerRendering.js:82:76)
       at lib/halvalla.js:612:31
       at Halvalla.render (lib/halvalla.js:615:9)
@@ -334,7 +334,7 @@
   10) text
        renders numbers:
      Invariant Violation: renderToStaticMarkup(): You must pass a valid ReactElement.
-      at invariant (node_modules/fbjs/lib/invariant.js:42:15)
+      at invariant (node_modules/react-dom/node_modules/fbjs/lib/invariant.js:42:15)
       at GreatEmptiness.renderToStaticMarkup [as conjurer] (node_modules/react-dom/lib/ReactServerRendering.js:82:76)
       at lib/halvalla.js:612:31
       at Halvalla.render (lib/halvalla.js:615:9)
@@ -345,7 +345,7 @@
 
 
 
-> halvalla@0.10.1 test-teacup /home/ubuntu/workspace
+> halvalla@0.11.0 test-teacup /Users/jim/clones/halvalla
 > rm test; ln -s test-teacup test; mocha
 
 
@@ -481,5 +481,5 @@
     ✓ are in the template function closure
 
 
-  63 passing (121ms)
+  63 passing (136ms)
 
