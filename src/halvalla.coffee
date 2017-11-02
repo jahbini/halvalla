@@ -69,8 +69,8 @@ class Halvalla
           propertyName:propertyName
           children:@render
           tagname: tagName[0].toLowerCase()+tagName.slice 1
-        console.log "Component construct",@
-        console.log "Component arguments",arguments
+        #console.log "Component construct",@
+        #console.log "Component arguments",arguments
         return
 
       render: ->
@@ -92,18 +92,18 @@ class Halvalla
           name = name[0].toLowerCase()+name.slice 1
         catch
           name = "badSeed"
-          console.log "Bad Seed!",@
-          
+          #console.log "Bad Seed!",@
+
         @_Halvalla =
           birthName: 'Acolyte '+nameMine.getName()
           tagName: name[0].toLowerCase()+name.slice 1
           propertyName:propertyName
           children:@[propertyName].children
-        console.log "Element construct",@
-        console.log "Element attrs should be object, typeof this.attrs = ",typeof @.attrs
-        console.log "Element arguments",arguments
+        #console.log "Element construct",@
+        #console.log "Element attrs should be object, typeof this.attrs = ",typeof @.attrs
+        #console.log "Element arguments",arguments
         return
-        
+
       view: ->
 
   mutator: (tagName,destination,withThis=null)->
@@ -141,8 +141,8 @@ class Halvalla
     return @bagMan.shipOut el
 
   doctype: (type=5) ->
-    console.log "doctype request #{type}"
-    console.log "and it is... ",doctypes
+    #console.log "doctype request #{type}"
+    #console.log "and it is... ",doctypes
     @raw doctypes[type]
 
   ie: (condition,contents)->
@@ -214,14 +214,14 @@ class Halvalla
       tagConstructor=tagName
       name = tagName.name
       tagName= name[0].toLowerCase()+name.slice 1
-      console.log "Activvating NEW"
+      #console.log "Activvating NEW"
       unless Halvalla::[tagName]  #generate alias for stack dumps
         Halvalla::[tagName]= (component, args...) -> @crel tagName,component,args...
       if oracle.preInstantiate  # mithril specific Component instantiation done here
         el1 = new tagConstructor tagName
         #attrs._Halvalla= el1._Halvalla ## promote for mithril
-        el = oracle.createElement el1,attrs,null # no children until 'view'ed 
-      else 
+        el = oracle.createElement el1,attrs,null # no children until 'view'ed
+      else
         name = tagName
         el = oracle.createElement tagName, attrs, children...
     el._Halvalla= {
@@ -314,7 +314,7 @@ class Halvalla
 
   renderable: (stuff)->
     return (args...) =>
-      console.log "RENDERABLE Called ", args...
+      #console.log "RENDERABLE Called ", args...
       @create stuff args...
   #
   # rendering
@@ -324,8 +324,8 @@ class Halvalla
   #liftedd from teacup renderer.  This side only does the instantiation
   march: (bag)->
     while component = bag.inspect()
-      console.log "March Halvalla - to component",component
-      console.log "Constructor name",component.constructor.name
+      #console.log "March Halvalla - to component",component
+      #console.log "Constructor name",component.constructor.name
       switch n=component.constructor.name
         when 'Function'
           y=bag.harvest()
@@ -339,14 +339,14 @@ class Halvalla
           Why did the entire z need to be put in?
           bag.reinspect if z.length>0 then z else x
           ###
-          
+
           bag.reinspect x
           break
         when 'String','Number' then bag.shipOut component
         when  n[0].toLowerCase()+n.slice 1 then bag.shipOut component
         else
           tagName = oracle.getName component
-          console.log 'Tagname of March component type object',tagName
+          #console.log 'Tagname of March component type object',tagName
           if 'string'== typeof tagName
             bag.shipOut component
             break
@@ -373,7 +373,7 @@ class Halvalla
               #render the node and append it to the htmlOout string
               bag.shipOut @[tagNameLC] '.selectorCase',attrs,oracle.getChildren component
     return null
-    
+
   create: (node,rest...)->
     if 'function' == typeof node
       oldBagger = @bagMan
@@ -386,11 +386,11 @@ class Halvalla
       structure = node
     else
       structure = new String node
-    return structure 
-  
+    return structure
+
   render: (funct,rest...)->
     structure = @create funct,rest...
-    structure = [structure ] unless structure.length 
+    structure = [structure ] unless structure.length
     result = for element in structure
       #console.log "Render element sent to oracle.conjurer",element
       oracle.conjurer element

@@ -42,7 +42,7 @@ elements =
 
 nickName= (thing)->
   if !thing
-    return "All Done! We close bag now\n" 
+    return "All Done! We close bag now\n"
   if thing._Halvalla
     return thing._Halvalla.birthName
   if thing.props?._Halvalla
@@ -72,7 +72,7 @@ BagMan = class BagMan
     @lastShipment = null
     @shipment = null
     return
-    
+
   context: (inputStuff...)->
     #console.log inputStuff
     @lastShipment = null
@@ -80,37 +80,37 @@ BagMan = class BagMan
     @toDoList=a.reverse()
     @shipment = []
     return
-    
+
   shipOut: (thing)=>
     return thing unless @shipment
     return thing if thing == @lastShipment
-    console.log "shipping",thing
-    console.log "output length",@shipment.length
+    #console.log "shipping",thing
+    #console.log "output length",@shipment.length
     @lastShipment = thing
     kind = thing.constructor.name
     thing = thing.toString() if kind is 'String' or kind is 'Number' or kind is'Boolean'
     @shipment.push thing
     return thing
-    
+
    inspect: ()=>
-     console.log "Looking at -", nickName @toDoList[@toDoList.length-1]
+     #console.log "Looking at -", nickName @toDoList[@toDoList.length-1]
      return @toDoList.pop()
-     
+
    reinspect: (stuff)=>
-    console.log "reinspect",nickName stuff
+    #console.log "reinspect",nickName stuff
     newStuff = normalizeArray stuff
     for eachItem in newStuff by -1
-      console.log "reinspect",nickName eachItem
+      #console.log "reinspect",nickName eachItem
       # force the caller to make primitive types into objects
       # that way each item will have a constructor and a constructor name
-      console.log 'illegal input in instantiation bag #{eachItem}'  if 'object' != typeof eachItem
+      #console.log 'illegal input in instantiation bag #{eachItem}'  if 'object' != typeof eachItem
       @toDoList.push eachItem
     return stuff
   harvest:()=>
     #console.log "harvest",@shipment
-    
+
     return @shipment
-    
+
 # Create a unique list of element names merging the desired groups.
 mergeElements = (args...) ->
   result = []
