@@ -81,16 +81,16 @@ BagMan = class BagMan
     @shipment = []
     return
     
-  shipOut: (stuff)=>
-    return stuff unless @shipment
-    return stuff if stuff == @lastShipment
-    console.log "shipping",stuff
+  shipOut: (thing)=>
+    return thing unless @shipment
+    return thing if thing == @lastShipment
+    console.log "shipping",thing
     console.log "output length",@shipment.length
-    @lastShipment = stuff
-    cleanStuff = normalizeArray stuff
-    for eachItem in cleanStuff
-      @shipment.push eachItem
-    return stuff
+    @lastShipment = thing
+    kind = thing.constructor.name
+    thing = thing.toString() if kind is 'String' or kind is 'Number' or kind is'Boolean'
+    @shipment.push thing
+    return thing
     
    inspect: ()=>
      console.log "Looking at -", nickName @toDoList[@toDoList.length-1]
