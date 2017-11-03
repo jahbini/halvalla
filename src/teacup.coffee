@@ -68,6 +68,9 @@ module.exports = Teacup = class Teacup
       else
         template.apply @, args
 
+  kebabify= (text)->
+    return text.replace /([A-Z])/g, ($1) -> "-#{$1.toLowerCase()}"
+
   renderAttr: (name, value) ->
     if not value?
       return " #{name}"
@@ -76,7 +79,7 @@ module.exports = Teacup = class Teacup
       return ''
 
     if name == 'style' && 'object' == typeof value
-      return " #{name}=#{(k+':'+v for k,v of value).join ';'}"
+      return " #{name}=#{((kebabify k)+':'+v for k,v of value).join ';'}"
 
     if name is 'data' and typeof value is 'object'
       return (@renderAttr "data-#{k}", v for k,v of value).join('')
@@ -84,7 +87,7 @@ module.exports = Teacup = class Teacup
     if value is true
       value = name
 
-    return " #{name}=#{quote escape value.toString()}"
+    return " #{kebabify name}=#{quote escape value.toString()}"
 
   attrOrder: ['id', 'class']
   renderAttrs: (obj) ->
@@ -165,11 +168,12 @@ module.exports = Teacup = class Teacup
     return result
 
   scriptTag: (cell) ->
-    {children} = cell
+    {children,text} = cell
     props=@oracle.getProp cell
     tagName=@oracle.getName cell
+    script = (cell.text || cell.children).toString()
     result = "<#{tagName}#{@renderAttrs props}>"
-    result += children
+    result += script.replace /<\//g,"<\\/"
     result += "</#{tagName}>"
     return result
 
@@ -192,7 +196,7 @@ module.exports = Teacup = class Teacup
     })();</script>"""
 
   commentTag: (text) ->
-    return "<!--#{escape text.children}-->"
+    return "<!--#{escape text.text || text.children}-->"
 
   doctypeTag: (type=5) ->
     return doctypes[type]

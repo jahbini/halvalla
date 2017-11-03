@@ -1,17 +1,17 @@
 
-> halvalla@1.6.0 pretest /Users/jim/clones/halvalla
+> halvalla@1.7.0 pretest /Users/jim/clones/halvalla
 > npm run compile
 
 
-> halvalla@1.6.0 compile /Users/jim/clones/halvalla
+> halvalla@1.7.0 compile /Users/jim/clones/halvalla
 > coffee --compile --output lib/ src/
 
 
-> halvalla@1.6.0 test /Users/jim/clones/halvalla
+> halvalla@1.7.0 test /Users/jim/clones/halvalla
 > npm run test-mithril; npm run test-react; npm run test-teacup; rm test
 
 
-> halvalla@1.6.0 test-mithril /Users/jim/clones/halvalla
+> halvalla@1.7.0 test-mithril /Users/jim/clones/halvalla
 > rm test; ln -s test-mithril test; mocha
 
 
@@ -55,7 +55,7 @@
     ✓ works
 
   Comments
-    1) renders HTML <!--comments-->
+    ✓ renders HTML <!--comments-->
 
   CSS Selectors
     id selector
@@ -89,7 +89,7 @@
     ✓ transitional should render transitional doctype
 
   HereDocs
-    2) preserves line breaks
+    ✓ preserves line breaks
 
   IE conditionals
     ✓ renders conditional comments
@@ -138,35 +138,10 @@
     ✓ are in the template function closure
 
 
-  54 passing (101ms)
-  2 failing
-
-  1) Comments
-       renders HTML <!--comments-->:
-     TypeError: Cannot read property 'toString' of undefined
-      at escape (lib/html-tags.js:159:16)
-      at Teacup.module.exports.Teacup.commentTag (lib/teacup.js:272:24)
-      at Teacup.(anonymous function) [as comment] (lib/teacup.js:355:30)
-      at Teacup.module.exports.Teacup.march (lib/teacup.js:53:40)
-      at Teacup.module.exports.Teacup.render (lib/teacup.js:72:12)
-      at lib/halvalla.js:618:31
-      at Halvalla.render (lib/halvalla.js:621:9)
-      at allTags.(anonymous function).bound.(anonymous function) (lib/halvalla.js:640:34)
-      at Context.<anonymous> (test-mithril/comments.coffee:7:12)
-  
-
-  2) HereDocs
-       preserves line breaks:
-     Error: expected '<script>undefined</script>' to equal '<script>$(document).ready(function(){\n  alert(\'test\');\n});</script>'
-      at Assertion.assert (node_modules/expect.js/index.js:96:13)
-      at Assertion.be.Assertion.equal (node_modules/expect.js/index.js:216:10)
-      at Context.<anonymous> (test-mithril/heredocs.coffee:11:32)
-  
+  56 passing (110ms)
 
 
-
-
-> halvalla@1.6.0 test-react /Users/jim/clones/halvalla
+> halvalla@1.7.0 test-react /Users/jim/clones/halvalla
 > rm test; ln -s test-react test; mocha
 
 
@@ -272,7 +247,7 @@
     ✓ are in the template function closure
 
 
-  35 passing (129ms)
+  35 passing (146ms)
   10 failing
 
   1) components with child
@@ -373,7 +348,7 @@
 
 
 
-> halvalla@1.6.0 test-teacup /Users/jim/clones/halvalla
+> halvalla@1.7.0 test-teacup /Users/jim/clones/halvalla
 > rm test; ln -s test-teacup test; mocha
 
 
@@ -453,7 +428,7 @@
       ✓ gives the author granular control of escaping
 
   script tag
-    1) escapes /
+    ✓ escapes /
 
   HereDocs
     ✓ preserves line breaks
@@ -509,16 +484,5 @@
     ✓ are in the template function closure
 
 
-  62 passing (145ms)
-  1 failing
-
-  1) script tag
-       escapes /:
-     Error: expected '<script>window.user = {"name":"</script><script>alert(\\"alert\\");</script>"}</script>' to equal '<script>window.user = {&quot;name&quot;:&quot;&lt;/script&gt;&lt;script&gt;alert(\\&quot;alert\\&quot;);&lt;/script&gt;&quot;}</script>'
-      at Assertion.assert (node_modules/expect.js/index.js:96:13)
-      at Assertion.be.Assertion.equal (node_modules/expect.js/index.js:216:10)
-      at Context.<anonymous> (test-teacup/escaping.coffee:37:32)
-  
-
-
+  63 passing (144ms)
 
