@@ -193,7 +193,7 @@ module.exports = Teacup = class Teacup
     })();</script>"""
 
   commentTag: (text) ->
-    return "<!--#{escape text.children}-->"
+    return "<!--#{escape (text.children || text.text || text).toString()}-->"
 
   doctypeTag: (type=5) ->
     return doctypes[type]
