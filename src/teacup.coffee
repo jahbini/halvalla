@@ -6,6 +6,7 @@ module.exports = Teacup = class Teacup
 
   march: (bag)->
     while component = bag.inspect()
+     #console.log "March Teacup",component._Halvalla?.birthName || component.toString()
       switch n=component.constructor.name
         when 'Function' then bag.reinspect @instantiator component
         when 'String','Number' then bag.shipOut component.toString()
@@ -24,6 +25,7 @@ module.exports = Teacup = class Teacup
             else
               attrs = component.props
             node = new tagConstructor tagName,attrs,component.children
+            #console.log "newly instantiated node",node
             unless Teacup::[tagName]  #generate alias for stack dumps
               Teacup::[tagName]= (component, args...) -> @view component,args...
             bag.shipOut @view node
@@ -31,6 +33,7 @@ module.exports = Teacup = class Teacup
           if @[tagName]
             bag.shipOut @[tagName] component
           else
+           #console.log "Component without teacup renderer: #{tagName}"
             if 'string' == typeof component.tag
               y= @tag component
             else 
@@ -46,6 +49,7 @@ module.exports = Teacup = class Teacup
     @march @bagMan
     result = @bagMan.harvest().join ''
     @bagMan = oldBagger
+   #console.log "Final Render",result
     return result
 
   # alias render for coffeecup compatibility
@@ -63,19 +67,17 @@ module.exports = Teacup = class Teacup
         return result
       else
         template.apply @, args
+        
   kebabify= (text)->
     return text.replace /([A-Z])/g, ($1) -> "-#{$1.toLowerCase()}"
 
   renderAttr: (name, value) ->
-    if not value?
-      return " #{name}"
-
-    if value is false
-      return ''
+    return " #{kebabify name}" if not value?
+    return '' if value is false
 
     if name == 'style' && 'object' == typeof value
       return " #{name}=#{quote((kebabify k)+':'+v for k,v of value).join ';'}"
-
+      
     if name is 'data' and typeof value is 'object'
       return (@renderAttr "data-#{k}",quote v for k,v of value).join('')
 
@@ -114,19 +116,25 @@ module.exports = Teacup = class Teacup
 
   view: (cell) ->
     {children} = cell
+    #console.log "VIEW",cell
     props=@oracle.getProp cell
+   #console.log "Teacup::tag Typeof props to render", typeof props
     result = ''
     if cell.tag?.view 
-      x= cell.tag.view()
+      x= cell.tag.view(props)
       result += @render x
+   #console.log "Teacup::view final result", result
     return result
 
   tag: (cell) ->
     {children} = cell
+   #console.log "CELL!",cell
     props=@oracle.getProp cell
+   #console.log "Teacup::tag Typeof props to render", typeof props
     tagName=@oracle.getName cell
     result = ''
     result += "<#{tagName}#{@renderAttrs props}>" unless tagName == 'text'
+   #console.log "Teacup::tag early result", result
     if cell.text
       result += cell.text
     else if props?.dangerouslySetInnerHTML
@@ -140,6 +148,7 @@ module.exports = Teacup = class Teacup
           result += @render child
         
     result += "</#{tagName}>" unless tagName == 'text'
+   #console.log "Teacup::tag final result", result
     return result
 
 
@@ -160,7 +169,7 @@ module.exports = Teacup = class Teacup
     props=@oracle.getProp cell
     tagName=@oracle.getName cell
     result = "<#{tagName}#{@renderAttrs props}>"
-    result += @renderContents children
+    result += children
     result += "</#{tagName}>"
     return result
 
@@ -196,6 +205,7 @@ module.exports = Teacup = class Teacup
     return result
 
   textOnly: (s) ->
+    #console.log "text appends ",s? and escape(s.toString()) or ''
     return new String (s? and escape(s.toString()) or '')
 
 # Define tag functions on the prototype for pretty stack traces

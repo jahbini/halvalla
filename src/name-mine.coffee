@@ -119,8 +119,8 @@ module.exports = nameMine = {
 }
 
 #for i in [1 ... 347] by 17
-#  console.log i,nameMine.getName(i)
+#  #console.log i,nameMine.getName(i)
 #for i in [0 ... 1000] by 100
-#  console.log i,nameMine.getName(i)
+#  #console.log i,nameMine.getName(i)
 #i=5000
 #console.log i,nameMine.getName(i)
