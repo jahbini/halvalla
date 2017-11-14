@@ -76,7 +76,7 @@ module.exports = Teacup = class Teacup
     return '' if value is false
 
     if name == 'style' && 'object' == typeof value
-      return " #{name}=#{quote((kebabify k)+':'+v for k,v of value).join ';'}"
+      return " #{name}=#{quote(((kebabify k)+':'+v for k,v of value).join ';')}"
       
     if name is 'data' and typeof value is 'object'
       return (@renderAttr "data-#{k}",quote v for k,v of value).join('')
@@ -168,8 +168,9 @@ module.exports = Teacup = class Teacup
     {children} = cell
     props=@oracle.getProp cell
     tagName=@oracle.getName cell
+    script = (cell.text || cell.children).toString()
     result = "<#{tagName}#{@renderAttrs props}>"
-    result += children
+    result += script.replace /<\//g,"<\\/"
     result += "</#{tagName}>"
     return result
 
