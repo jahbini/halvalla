@@ -63,6 +63,8 @@ module.exports = Teacup = class Teacup
         return result
       else
         template.apply @, args
+  kebabify= (text)->
+    return text.replace /([A-Z])/g, ($1) -> "-#{$1.toLowerCase()}"
 
   renderAttr: (name, value) ->
     if not value?
@@ -71,13 +73,16 @@ module.exports = Teacup = class Teacup
     if value is false
       return ''
 
+    if name == 'style' && 'object' == typeof value
+      return " #{name}=#{quote((kebabify k)+':'+v for k,v of value).join ';'}"
+
     if name is 'data' and typeof value is 'object'
-      return (@renderAttr "data-#{k}", v for k,v of value).join('')
+      return (@renderAttr "data-#{k}",quote v for k,v of value).join('')
 
     if value is true
       value = name
 
-    return " #{name}=#{quote escape value.toString()}"
+    return " #{kebabify name}=#{quote escape value.toString()}"
 
   attrOrder: ['id', 'class']
   renderAttrs: (obj) ->
