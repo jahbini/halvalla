@@ -182,6 +182,18 @@ module.exports = Teacup = class Teacup
       throw new Error "Halvalla: <#{tagName}/> must not have content.  Attempted to nest #{children}"
     return "<#{tagName}#{@renderAttrs props} />"
 
+  coffeescriptTag: (cell) ->
+    fn = cell.children
+    return """<script type="text/javascript">(function() {
+      var __slice = [].slice,
+          __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
+          __hasProp = {}.hasOwnProperty,
+          __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+      (#{escape fn.toString()})();
+    })();</script>"""
+
+  commentTag: (text) ->
+    return "<!--#{escape (text.children || text.text || text).toString()}-->"
 
   doctypeTag: (type=5) ->
     return doctypes[type]
