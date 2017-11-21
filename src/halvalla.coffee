@@ -130,7 +130,21 @@ class Halvalla
       #console.log "Pure ", st
       #console.log "WAS ",previous
       return stackHad
-
+      
+  coffeescript: (fn)->
+    @raw """<script type="text/javascript">(function() {
+      var slice = [].slice,
+        extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+        hasProp = {}.hasOwnProperty,
+        indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+      (#{@escape fn.toString()})();
+    })();</script>"""
+    
+  comment: (text)->
+    unless text.toString
+      throw new Error "comment tag allows text only: expected a string"
+    return @raw "<!--#{escape text}-->"
+    
   raw: (text)->
     unless text.toString
       throw new Error "raw allows text only: expected a string"
@@ -424,7 +438,7 @@ class Halvalla
       do (tagName) =>
         @mutator tagName,@crel
 
-    for tagName in mergeElements 'script','coffeescript','comment'
+    for tagName in mergeElements 'script'
       do (tagName) =>
         @mutator tagName,@crel
 
