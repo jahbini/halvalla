@@ -56,5 +56,5 @@
     "test-teacup": "rm test; ln -s test-teacup test; mocha",
     "test": "npm run test-mithril; npm run test-react; npm run test-teacup; rm test"
   },
-  "version": "1.8.0"
+  "version": "1.8.1"
 }
