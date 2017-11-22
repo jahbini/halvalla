@@ -80,7 +80,10 @@ module.exports = Teacup = class Teacup
       
     if name is 'data' and typeof value is 'object'
       return (@renderAttr "data-#{k}",quote v for k,v of value).join('')
-
+      
+    if name is 'aria' and typeof value is 'object'
+      return (@renderAttr "aria-#{k}",quote v for k,v of value).join('')
+      
     if value is true
       value = name
 
@@ -96,7 +99,7 @@ module.exports = Teacup = class Teacup
 
     # render explicitly ordered attributes first
     for name in @attrOrder when name of obj
-      result += @renderAttr name, obj[name]
+      result += @renderAttr name, obj[name] unless name == 'dangerouslySetInnerHTML'
 
     # then unordered attrs
     for name, value of obj
