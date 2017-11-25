@@ -16,17 +16,19 @@ describe 'coffeescript', ->
     # Equal ignoring whitespace
     expect(render(template()).replace(/[\n ]/g, '')).to.equal expected.replace(/[\n ]/g, '')
 
-
-  it 'escapes the function contents for script tag', ->
+ it 'escapes the function contents for script tag', ->
     template = renderable -> coffeescript ->
       user = name: '</script><script>alert("alert");</script>'
       alert "Hello #{user.name}!"
 
-    expect(render(template())).to.contain "'&lt;/script&gt;&lt;script&gt;alert(&quot;alert&quot;);&lt;/script&gt;'"
+    expect(render template()).to.contain "'<\\/script><script>alert(\"alert\");<\\/script>'"
 
-  # it 'string should render', ->
-  #   t = -> coffeescript "alert 'hi'"
-  #   assert.equal cc.render(t), "<script type=\"text/coffeescript\">alert 'hi'</script>"
-  # it 'object should render', ->
-  #   t = -> coffeescript src: 'script.coffee'
-  #   assert.equal cc.render(t), "<script src=\"script.coffee\" type=\"text/coffeescript\"></script>"
+  it 'string should render', ->
+    t = -> coffeescript "alert 'hi'"
+    expect(render t ).to.contain  "alert 'hi'"
+  it 'comparison should render', ->
+    t = -> coffeescript "alert 1>0"
+    expect(render(t)).to.contain "alert 1>0"
+  #it 'object should render', ->
+  #  t = -> coffeescript src: 'script.coffee'
+  #  expect(render(t)).to.contain "<script src=\"script.coffee\" type=\"text/coffeescript\"></script>"
