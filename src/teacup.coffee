@@ -191,7 +191,7 @@ module.exports = Teacup = class Teacup
   doctypeTag: (type=5) ->
     return doctypes[type]
 
-  ie: (cell)->
+  ieTag: (cell)->
     props = @oracle.getProp cell
     result = "<!--[if #{escape props.condition}]>"
     result += @render cell.children
@@ -217,9 +217,10 @@ for tagName in mergeElements 'script'
   do (tagName) ->
     Teacup::[tagName] = (args...) -> @scriptTag args...
 
-for tagName in 'ie'
+for tagName in ['ie']
   do (tagName) ->
-    Teacup::[tagName] = (args...) -> @ie args...
+    Teacup::[tagName] = (args...) ->
+      @ieTag args...
     
 for tagName in mergeElements 'void', 'obsolete_void'
   do (tagName) ->
