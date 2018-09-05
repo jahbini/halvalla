@@ -3,6 +3,7 @@
 module.exports = Teacup = class Teacup
   constructor: (@instantiator,@oracle)->
     @bagMan = new BagMan
+    @.keepCamelCase = false
 
   march: (bag)->
     while component = bag.inspect()
@@ -68,15 +69,16 @@ module.exports = Teacup = class Teacup
       else
         template.apply @, args
         
-  kebabify= (text)->
+  kebabify: (text)->
+    return text if @keepCamelCase
     return text.replace /([A-Z])/g, ($1) -> "-#{$1.toLowerCase()}"
 
   renderAttr: (name, value) ->
-    return " #{kebabify name}" if not value?
+    return " #{@kebabify name}" if not value?
     return '' if value is false
 
     if name == 'style' && 'object' == typeof value
-      return " #{name}=#{quote(((kebabify k)+':'+v for k,v of value).join ';')}"
+      return " #{name}=#{quote(((@kebabify k)+':'+v for k,v of value).join ';')}"
       
     if name is 'data' and typeof value is 'object'
       return (@renderAttr "data-#{k}",quote v for k,v of value).join('')
@@ -87,7 +89,7 @@ module.exports = Teacup = class Teacup
     if value is true
       value = name
 
-    return " #{kebabify name}=#{quote escape value.toString()}"
+    return " #{@kebabify name}=#{quote escape value.toString()}"
 
   attrOrder: ['id', 'class']
   renderAttrs: (obj) ->
@@ -135,6 +137,7 @@ module.exports = Teacup = class Teacup
     props=@oracle.getProp cell
    #console.log "Teacup::tag Typeof props to render", typeof props
     tagName=@oracle.getName cell
+    @.keepCamelCase = ( tagName == 'svg' )
     result = ''
     result += "<#{tagName}#{@renderAttrs props}>" unless tagName == 'text'
    #console.log "Teacup::tag early result", result
@@ -151,6 +154,7 @@ module.exports = Teacup = class Teacup
           result += @render child
         
     result += "</#{tagName}>" unless tagName == 'text'
+    @.keepCamelCase = false
    #console.log "Teacup::tag final result", result
     return result
 
