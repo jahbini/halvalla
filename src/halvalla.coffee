@@ -145,7 +145,7 @@ class Halvalla
       throw new Error "comment tag allows text only: expected a string"
     return @raw "<!--#{escape text}-->"
     
-  raw: (text)->
+  raw: (text="")->  #allow empty or null parmameter
     unless text.toString
       throw new Error "raw allows text only: expected a string"
     if oracle.trust
