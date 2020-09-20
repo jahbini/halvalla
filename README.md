@@ -1,3 +1,5 @@
+[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/jahbini/halvalla)
+
 # Halvalla
 
 ## The land where HTML deamons are conjured, instantiated and summoned into Three Domains
